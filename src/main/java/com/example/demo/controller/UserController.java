@@ -21,10 +21,16 @@ public class UserController {
         return repo.findAll();
     }
 
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        return repo.findById(id).orElse(null);
+    }
+
     @PostMapping
     public User createUser(@RequestParam String name) {
         User user = new User();
         user.setName(name);
         return repo.save(user);
     }
+
 }
