@@ -20,4 +20,11 @@ public class UserController {
     public List<User> getAll() {
         return repo.findAll();
     }
+
+    @PostMapping
+    public User createUser(@RequestParam String name) {
+        User user = new User();
+        user.setName(name);
+        return repo.save(user);
+    }
 }
