@@ -26,6 +26,11 @@ public class UserController {
         return repo.findById(id).orElse(null);
     }
 
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        repo.deleteById(id);
+    }
+
     @PostMapping
     public User createUser(@RequestParam String name) {
         User user = new User();
