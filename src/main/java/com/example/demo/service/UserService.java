@@ -42,7 +42,14 @@ public class UserService {
 
 
     public User updateUser(Long id, String name) {
-        User user = repo.findById(id).orElseThrow(UserNotFoundException::new);
+
+        if (name == null || name.isEmpty()) {
+            throw new BadRequestException();
+        }
+
+        User user = repo.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
         user.setName(name);
         return repo.save(user);
     }
