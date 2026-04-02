@@ -40,6 +40,9 @@ public class UserController {
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestParam String name) {
         User user = repo.findById(id).orElse(null);
+        if (user == null) {
+            return null;
+        }
         user.setName(name);
         return repo.save(user);
     }
