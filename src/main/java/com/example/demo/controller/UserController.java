@@ -37,6 +37,7 @@ public class UserController {
         user.setName(name);
         return repo.save(user);
     }
+
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestParam String name) {
         User user = repo.findById(id).orElse(null);
