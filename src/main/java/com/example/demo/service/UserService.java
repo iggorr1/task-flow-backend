@@ -29,10 +29,16 @@ public class UserService {
     }
 
     public User createUser(String name) {
+
+        if (name == null || name.isEmpty()) {
+            throw new RuntimeException("Name cannot be empty");
+        }
+
         User user = new User();
         user.setName(name);
         return repo.save(user);
     }
+
 
     public User updateUser(Long id, String name) {
         User user = repo.findById(id).orElse(null);
