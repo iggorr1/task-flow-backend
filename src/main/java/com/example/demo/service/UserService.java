@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
+import java.util.Date;
 import com.example.demo.dto.RegisterRequestDto;
+import com.example.demo.exception.EmailAlreadyExistsException;
+import com.example.demo.exception.LoginAlreadyExistsException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.entity.User;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,7 @@ public class UserService {
     private final UserRepository repo;
 
     public UserService(UserRepository repo) {
-        this.repo = repo;
+            this.repo = repo;
     }
 
     public List<User> getAll() {
@@ -69,6 +72,20 @@ public class UserService {
         if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
             throw new BadRequestException();
         }
+        if (repo.existsByLogin(dto.getLogin())) {
+            throw new LoginAlreadyExistsException();
+        }
+        if (repo.existsByEmail(dto.getEmail())) {
+            throw new EmailAlreadyExistsException();
+        }
+
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setLogin(dto.getLogin());
+        user.setPassword(dto.getPassword());
+        user.setCreatedAt(new Date());
+        repo.save(user);
     }
 
 }
