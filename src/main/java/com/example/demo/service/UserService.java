@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.entity.User;
 import org.springframework.stereotype.Service;
@@ -53,4 +54,21 @@ public class UserService {
         user.setName(name);
         return repo.save(user);
     }
+
+
+    public void register(RegisterRequestDto dto) {
+        if (dto.getName() == null || dto.getName().isEmpty()) {
+            throw new BadRequestException();
+        }
+        if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
+            throw new BadRequestException();
+        }
+        if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
+            throw new BadRequestException();
+        }
+        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+            throw new BadRequestException();
+        }
+    }
+
 }
