@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.LoginRequestDto;
+import com.example.demo.dto.UserResponseDto;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +41,10 @@ public class UserController {
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @RequestParam String name) {
         return service.updateUser(id, name);
+    }
+
+    @PostMapping("/login")
+    public UserResponseDto login(@RequestBody LoginRequestDto dto) {
+        return service.login(dto);
     }
 }
