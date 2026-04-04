@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.LoginRequestDto;
+import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
@@ -46,5 +47,10 @@ public class UserController {
     @PostMapping("/login")
     public UserResponseDto login(@RequestBody LoginRequestDto dto) {
         return service.login(dto);
+    }
+
+    @PostMapping("/register")
+    public UserResponseDto register(@RequestBody RegisterRequestDto dto) {
+        return service.register(dto);
     }
 }
