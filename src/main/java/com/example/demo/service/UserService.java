@@ -1,14 +1,18 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.example.demo.dto.LoginRequestDto;
+import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.exception.EmailAlreadyExistsException;
 import com.example.demo.exception.LoginAlreadyExistsException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.entity.User;
+import com.example.demo.security.JwtService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.demo.exception.BadRequestException;
@@ -18,6 +22,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private final JwtService jwtService;
 
     private final UserRepository repo;
 
@@ -33,7 +39,8 @@ public class UserService {
 
 
 
-    public UserService(UserRepository repo, PasswordEncoder passwordEncoder) {
+    public UserService(JwtService jwtService, UserRepository repo, PasswordEncoder passwordEncoder) {
+        this.jwtService = jwtService;
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
     }
@@ -67,7 +74,8 @@ public class UserService {
         return repo.save(user);
     }
 
-    public UserResponseDto login(LoginRequestDto dto) {
+    public LoginResponseDto login(LoginRequestDto dto) {
+
         if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
             throw new BadRequestException();
         }
@@ -81,14 +89,15 @@ public class UserService {
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new BadRequestException();
         }
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                user.getLogin(),
+                user.getPassword(),
+                new ArrayList<>()
+        );
 
-        UserResponseDto responseDto = new UserResponseDto();
-        responseDto.setId(user.getId());
-        responseDto.setName(user.getName());
-        responseDto.setEmail(user.getEmail());
-        responseDto.setLogin(user.getLogin());
-        responseDto.setCreatedAt(user.getCreatedAt());
-        return responseDto;
+        String token = jwtService.generateToken(userDetails);
+        return new LoginResponseDto(token);
+
     }
 
     public UserResponseDto register(RegisterRequestDto dto) {
