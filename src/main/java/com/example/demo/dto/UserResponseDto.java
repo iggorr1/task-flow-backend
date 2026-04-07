@@ -53,6 +53,4 @@ public class UserResponseDto {
         this.id = id;
     }
 
-    }
-
 }
