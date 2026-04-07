@@ -10,7 +10,16 @@ public class UserResponseDto {
     private String login;
     private Date createdAt;
 
+    public UserResponseDto(Long id, String name, String email, String login, Date createdAt) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.login = login;
+        this.createdAt = createdAt;
+    }
+
     public UserResponseDto() {
+
     }
 
     public String getName() {

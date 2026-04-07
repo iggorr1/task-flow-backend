@@ -27,8 +27,16 @@ public class UserService {
 
     private final UserRepository repo;
 
-    public List<User> getAll() {
-        return repo.findAll();
+    public List<UserResponseDto> getAll() {
+        return repo.findAll().stream()
+                .map(user -> new UserResponseDto(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail(),
+                        user.getLogin(),
+                        user.getCreatedAt()
+                ))
+                .toList();
     }
 
     public User getById(Long id) {
