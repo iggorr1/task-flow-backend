@@ -47,6 +47,7 @@ public class UserController {
 
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto dto) {
+        System.out.println("LOGIN ENDPOINT HIT");
         return service.login(dto);
     }
 
