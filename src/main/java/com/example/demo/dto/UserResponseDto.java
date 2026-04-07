@@ -53,16 +53,6 @@ public class UserResponseDto {
         this.id = id;
     }
 
-    public class LoginResponseDto {
-        private String token;
-
-        public LoginResponseDto(String token) {
-            this.token = token;
-        }
-
-        public String getToken() {
-            return token;
-        }
     }
 
 }
