@@ -8,6 +8,7 @@ import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.util.Date;
 
@@ -51,5 +52,20 @@ public class TaskService {
                 savedTask.getDescription(),
                 savedTask.getCreatedAt()
         );
+
     }
+
+    public List<TaskResponseDto> getMyTasks() {
+        User user = getCurrentUser();
+
+        return taskRepository.findByUser(user).stream()
+                .map(task -> new TaskResponseDto(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getDescription(),
+                        task.getCreatedAt()
+                ))
+                .toList();
+    }
+
 }

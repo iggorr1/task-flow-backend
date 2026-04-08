@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import com.example.demo.dto.TaskResponseDto;
 
 @RestController
 @RequestMapping("/tasks")
@@ -19,4 +21,10 @@ public class TaskController {
                                       @RequestParam String description) {
         return taskService.createTask(title, description);
     }
+
+    @GetMapping
+    public List<TaskResponseDto> getMyTasks() {
+        return taskService.getMyTasks();
+    }
+
 }
