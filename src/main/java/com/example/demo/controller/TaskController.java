@@ -1,10 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Task;
+import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
@@ -17,13 +15,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestParam String title,
-                           @RequestParam String description) {
+    public TaskResponseDto createTask(@RequestParam String title,
+                                      @RequestParam String description) {
         return taskService.createTask(title, description);
-    }
-
-    @GetMapping
-    public List<Task> getMyTasks() {
-        return taskService.getMyTasks();
     }
 }
