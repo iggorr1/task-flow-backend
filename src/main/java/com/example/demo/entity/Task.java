@@ -15,8 +15,13 @@ public class Task {
     private String description;
     private Date createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = new Date();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Long getId() { return id; }
