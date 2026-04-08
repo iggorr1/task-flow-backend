@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
@@ -9,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class TaskService {
@@ -30,8 +30,7 @@ public class TaskService {
         return userRepository.findByLogin(login);
     }
 
-    public Task createTask(String title, String description) {
-
+    public TaskResponseDto createTask(String title, String description) {
         if (title == null || title.isEmpty()) {
             throw new BadRequestException();
         }
@@ -44,11 +43,13 @@ public class TaskService {
         task.setCreatedAt(new Date());
         task.setUser(user);
 
-        return taskRepository.save(task);
-    }
+        Task savedTask = taskRepository.save(task);
 
-    public List<Task> getMyTasks() {
-        User user = getCurrentUser();
-        return taskRepository.findByUser(user);
+        return new TaskResponseDto(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.getCreatedAt()
+        );
     }
 }
