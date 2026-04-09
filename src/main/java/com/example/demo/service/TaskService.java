@@ -5,11 +5,13 @@ import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.TaskAccessDeniedException;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import com.example.demo.exception.TaskNotFoundException;
 
 import java.util.Date;
 
@@ -51,7 +53,8 @@ public class TaskService {
                 savedTask.getId(),
                 savedTask.getTitle(),
                 savedTask.getDescription(),
-                savedTask.getCreatedAt()
+                savedTask.getCreatedAt(),
+                savedTask.isCompleted()
         );
 
     }
@@ -64,19 +67,20 @@ public class TaskService {
                         task.getId(),
                         task.getTitle(),
                         task.getDescription(),
-                        task.getCreatedAt()
+                        task.getCreatedAt(),
+                        task.isCompleted()
                 ))
                 .toList();
     }
 
     private Task getMyTaskById(Long id) {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(TaskNotFoundException::new);
 
         User currentUser = getCurrentUser();
 
         if (!task.getUser().getId().equals(currentUser.getId())) {
-            throw new BadRequestException();
+            throw new TaskAccessDeniedException();
         }
 
         return task;
@@ -94,13 +98,30 @@ public class TaskService {
                 savedTask.getId(),
                 savedTask.getTitle(),
                 savedTask.getDescription(),
-                savedTask.getCreatedAt()
+                savedTask.getCreatedAt(),
+                savedTask.isCompleted()
         );
     }
 
     public void deleteTask(Long id) {
         Task task = getMyTaskById(id);
         taskRepository.delete(task);
+    }
+
+    public TaskResponseDto completeTask(Long id) {
+        Task task = getMyTaskById(id);
+
+        task.setCompleted(true);
+
+        Task savedTask = taskRepository.save(task);
+
+        return new TaskResponseDto(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.getCreatedAt(),
+                savedTask.isCompleted()
+        );
     }
 
 }
