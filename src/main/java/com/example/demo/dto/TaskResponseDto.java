@@ -8,8 +8,9 @@ public class TaskResponseDto {
     private String title;
     private String description;
     private Date createdAt;
+    private boolean completed;
 
-    public TaskResponseDto() {
+    public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed) {
     }
 
     public TaskResponseDto(Long id, String title, String description, Date createdAt) {
@@ -17,6 +18,7 @@ public class TaskResponseDto {
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;
+        this.completed = completed;
     }
 
     public Long getId() {
@@ -49,5 +51,13 @@ public class TaskResponseDto {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

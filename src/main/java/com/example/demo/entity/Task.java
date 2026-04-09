@@ -14,6 +14,7 @@ public class Task {
     private String title;
     private String description;
     private Date createdAt;
+    private boolean completed;
 
     @PrePersist
     protected void onCreate() {
@@ -39,6 +40,13 @@ public class Task {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }
 
 
