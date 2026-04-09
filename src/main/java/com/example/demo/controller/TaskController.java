@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.TaskResponseDto;
+import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -25,6 +26,12 @@ public class TaskController {
     @GetMapping
     public List<TaskResponseDto> getMyTasks() {
         return taskService.getMyTasks();
+    }
+
+    @PutMapping("/{id}")
+    public TaskResponseDto updateTask(@PathVariable Long id,
+                                      @RequestBody UpdateTaskRequestDto request) {
+        return taskService.updateTask(id, request);
     }
 
 }
