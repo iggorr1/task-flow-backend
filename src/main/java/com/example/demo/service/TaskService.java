@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.TaskResponseDto;
+import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
@@ -68,4 +69,39 @@ public class TaskService {
                 .toList();
     }
 
+    private Task getMyTaskById(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        User currentUser = getCurrentUser();
+
+        if (!task.getUser().getId().equals(currentUser.getId())) {
+            throw new BadRequestException();
+        }
+
+        return task;
+    }
+
+    public TaskResponseDto updateTask(Long id, UpdateTaskRequestDto request) {
+        Task task = getMyTaskById(id);
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+
+        Task savedTask = taskRepository.save(task);
+
+        return new TaskResponseDto(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.getCreatedAt()
+        );
+    }
+
+    public void deleteTask(Long id) {
+        Task task = getMyTaskById(id);
+        taskRepository.delete(task);
+    }
+
 }
+
