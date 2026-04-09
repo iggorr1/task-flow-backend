@@ -11,9 +11,7 @@ public class TaskResponseDto {
     private boolean completed;
 
     public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed) {
-    }
 
-    public TaskResponseDto(Long id, String title, String description, Date createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;

@@ -53,7 +53,8 @@ public class TaskService {
                 savedTask.getId(),
                 savedTask.getTitle(),
                 savedTask.getDescription(),
-                savedTask.getCreatedAt()
+                savedTask.getCreatedAt(),
+                savedTask.isCompleted()
         );
 
     }
@@ -66,7 +67,8 @@ public class TaskService {
                         task.getId(),
                         task.getTitle(),
                         task.getDescription(),
-                        task.getCreatedAt()
+                        task.getCreatedAt(),
+                        task.isCompleted()
                 ))
                 .toList();
     }
@@ -104,6 +106,22 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task task = getMyTaskById(id);
         taskRepository.delete(task);
+    }
+
+    public TaskResponseDto completeTask(Long id) {
+        Task task = getMyTaskById(id);
+
+        task.setCompleted(true);
+
+        Task savedTask = taskRepository.save(task);
+
+        return new TaskResponseDto(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.getCreatedAt(),
+                savedTask.isCompleted()
+        );
     }
 
 }

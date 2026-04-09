@@ -39,4 +39,9 @@ public class TaskController {
         taskService.deleteTask(id);
     }
 
+    @PatchMapping("/{id}/complete")
+    public TaskResponseDto completeTask(@PathVariable Long id) {
+        return taskService.completeTask(id);
+    }
+
 }
