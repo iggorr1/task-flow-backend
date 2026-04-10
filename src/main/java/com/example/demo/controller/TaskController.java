@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
+import jakarta.validation.Valid;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import com.example.demo.dto.TaskResponseDto;
+
 
 @RestController
 @RequestMapping("/tasks")
@@ -30,7 +31,8 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public TaskResponseDto updateTask(@PathVariable Long id,
-                                      @RequestBody UpdateTaskRequestDto request) {
+                                      @RequestBody
+                                      @Valid UpdateTaskRequestDto request) {
         return taskService.updateTask(id, request);
     }
 

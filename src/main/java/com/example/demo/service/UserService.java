@@ -90,10 +90,9 @@ public class UserService {
         if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
             throw new BadRequestException();
         }
-        User user = repo.findByLogin(dto.getLogin());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        User user = repo.findByLogin(dto.getLogin())
+                .orElseThrow(UserNotFoundException::new);
+
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new BadRequestException();
         }

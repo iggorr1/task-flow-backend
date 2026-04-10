@@ -91,10 +91,6 @@ public class TaskService {
     public TaskResponseDto updateTask(Long id, UpdateTaskRequestDto request) {
         Task task = getMyTaskById(id);
 
-        if (request.getTitle() == null || request.getTitle().isEmpty()) {
-            throw new BadRequestException();
-        }
-
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
 
