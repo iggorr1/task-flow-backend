@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.entity.Task;
@@ -31,7 +32,8 @@ public class TaskService {
                 .getAuthentication()
                 .getName();
 
-        return userRepository.findByLogin(login);
+        return userRepository.findByLogin(login)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public TaskResponseDto createTask(String title, String description) {
@@ -89,8 +91,13 @@ public class TaskService {
     public TaskResponseDto updateTask(Long id, UpdateTaskRequestDto request) {
         Task task = getMyTaskById(id);
 
+        if (request.getTitle() == null || request.getTitle().isEmpty()) {
+            throw new BadRequestException();
+        }
+
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
+
 
         Task savedTask = taskRepository.save(task);
 
