@@ -5,22 +5,26 @@ import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.TaskAccessDeniedException;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.example.demo.exception.TaskNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Date;
 
 @Service
 public class TaskService {
 
+
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+
 
     public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
@@ -37,16 +41,12 @@ public class TaskService {
     }
 
     public TaskResponseDto createTask(String title, String description) {
-        if (title == null || title.isEmpty()) {
-            throw new BadRequestException();
-        }
 
         User user = getCurrentUser();
 
         Task task = new Task();
         task.setTitle(title);
         task.setDescription(description);
-        task.setCreatedAt(new Date());
         task.setUser(user);
 
         Task savedTask = taskRepository.save(task);
@@ -61,10 +61,12 @@ public class TaskService {
 
     }
 
-    public List<TaskResponseDto> getMyTasks() {
-        User user = getCurrentUser();
+    public List<TaskResponseDto> getMyTasks(int page, int size) {
 
-        return taskRepository.findByUser(user).stream()
+        User user = getCurrentUser();
+        Page<Task> taskPage = taskRepository.findByUser(user, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        List<Task> tasks = taskPage.getContent();
+        return tasks.stream()
                 .map(task -> new TaskResponseDto(
                         task.getId(),
                         task.getTitle(),
