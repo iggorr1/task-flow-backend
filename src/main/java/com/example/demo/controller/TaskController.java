@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CreateTaskRequestDto;
 import jakarta.validation.Valid;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
@@ -19,14 +20,16 @@ public class TaskController {
     }
 
     @PostMapping
-    public TaskResponseDto createTask(@RequestParam String title,
-                                      @RequestParam String description) {
-        return taskService.createTask(title, description);
-    }
+    public TaskResponseDto createTask(@Valid @RequestBody CreateTaskRequestDto dto) {
+
+        return taskService.createTask(dto.getTitle(), dto.getDescription());    }
 
     @GetMapping
-    public List<TaskResponseDto> getMyTasks() {
-        return taskService.getMyTasks();
+    public List<TaskResponseDto> getMyTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return taskService.getMyTasks(page, size);
     }
 
     @PutMapping("/{id}")
