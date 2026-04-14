@@ -61,7 +61,7 @@ public class TaskService {
 
     }
 
-    public List<TaskResponseDto> getMyTasks(int page, int size) {
+    public List<TaskResponseDto> getMyTasks(int page, int size, String sort) {
 
         User user = getCurrentUser();
         Page<Task> taskPage = taskRepository.findByUser(user, PageRequest.of(page, size, Sort.by("createdAt").descending()));
