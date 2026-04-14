@@ -61,11 +61,29 @@ public class TaskService {
 
     }
 
-    public List<TaskResponseDto> getMyTasks(int page, int size) {
+    public List<TaskResponseDto> getMyTasks(int page, int size, String sort) {
+
+        String[] parts = sort.split(",");
+        String field = parts[0];
+        String direction = parts[1];
+
+        Sort sortObj;
+
+        if (direction.equalsIgnoreCase("asc")) {
+            sortObj = Sort.by(field).ascending();
+        } else {
+            sortObj = Sort.by(field).descending();
+        }
 
         User user = getCurrentUser();
-        Page<Task> taskPage = taskRepository.findByUser(user, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+
+        Page<Task> taskPage = taskRepository.findByUser(
+                user,
+                PageRequest.of(page, size, sortObj)
+        );
+
         List<Task> tasks = taskPage.getContent();
+
         return tasks.stream()
                 .map(task -> new TaskResponseDto(
                         task.getId(),

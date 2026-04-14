@@ -27,9 +27,10 @@ public class TaskController {
     @GetMapping
     public List<TaskResponseDto> getMyTasks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort
     ) {
-        return taskService.getMyTasks(page, size);
+        return taskService.getMyTasks(page, size, sort);
     }
 
     @PutMapping("/{id}")
