@@ -52,13 +52,7 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        return new TaskResponseDto(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getCreatedAt(),
-                savedTask.isCompleted()
-        );
+        return toDto(savedTask);
 
     }
 
@@ -87,13 +81,7 @@ public class TaskService {
 
         return new PagedResponseDto<>(
                 tasks.stream()
-                        .map(task -> new TaskResponseDto(
-                                task.getId(),
-                                task.getTitle(),
-                                task.getDescription(),
-                                task.getCreatedAt(),
-                                task.isCompleted()
-                        ))
+                        .map(this::toDto)
                         .toList(),
                 taskPage.getNumber(),
                 taskPage.getSize(),
@@ -125,13 +113,7 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
-        return new TaskResponseDto(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getCreatedAt(),
-                savedTask.isCompleted()
-        );
+        return toDto(savedTask);
     }
 
     public void deleteTask(Long id) {
@@ -146,12 +128,16 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
 
+        return toDto(savedTask);
+    }
+
+    private TaskResponseDto toDto(Task task) {
         return new TaskResponseDto(
-                savedTask.getId(),
-                savedTask.getTitle(),
-                savedTask.getDescription(),
-                savedTask.getCreatedAt(),
-                savedTask.isCompleted()
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getCreatedAt(),
+                task.isCompleted()
         );
     }
 
