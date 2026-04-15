@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.CreateTaskRequestDto;
+import com.example.demo.dto.PagedResponseDto;
 import jakarta.validation.Valid;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
@@ -25,7 +26,7 @@ public class TaskController {
         return taskService.createTask(dto.getTitle(), dto.getDescription());    }
 
     @GetMapping
-    public List<TaskResponseDto> getMyTasks(
+    public PagedResponseDto<TaskResponseDto> getMyTasks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort

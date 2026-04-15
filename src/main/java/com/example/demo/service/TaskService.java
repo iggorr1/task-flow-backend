@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.PagedResponseDto;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
@@ -61,7 +62,7 @@ public class TaskService {
 
     }
 
-    public List<TaskResponseDto> getMyTasks(int page, int size, String sort) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort) {
 
         String[] parts = sort.split(",");
         String field = parts[0];
@@ -84,15 +85,22 @@ public class TaskService {
 
         List<Task> tasks = taskPage.getContent();
 
-        return tasks.stream()
-                .map(task -> new TaskResponseDto(
-                        task.getId(),
-                        task.getTitle(),
-                        task.getDescription(),
-                        task.getCreatedAt(),
-                        task.isCompleted()
-                ))
-                .toList();
+        return new PagedResponseDto<>(
+                tasks.stream()
+                        .map(task -> new TaskResponseDto(
+                                task.getId(),
+                                task.getTitle(),
+                                task.getDescription(),
+                                task.getCreatedAt(),
+                                task.isCompleted()
+                        ))
+                        .toList(),
+                taskPage.getNumber(),
+                taskPage.getSize(),
+                taskPage.getTotalElements(),
+                taskPage.getTotalPages()
+        );
+
     }
 
     private Task getMyTaskById(Long id) {
