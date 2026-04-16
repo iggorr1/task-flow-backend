@@ -63,17 +63,7 @@ public class TaskService {
             sort = "createdAt,desc";
         }
 
-        String[] parts = sort.split(",");
-        String field = parts[0];
-        String direction = parts[1];
-
-        Sort sortObj;
-
-        if (direction.equalsIgnoreCase("asc")) {
-            sortObj = Sort.by(field).ascending();
-        } else {
-            sortObj = Sort.by(field).descending();
-        }
+        Sort sortObj = buildSort(sort);
 
         User user = getCurrentUser();
 
@@ -94,6 +84,23 @@ public class TaskService {
                 taskPage.getTotalPages()
         );
 
+    }
+
+    private Sort buildSort(String sort) {
+
+        if (!sort.contains(",")) {
+            return Sort.by("createdAt").descending();
+        }
+
+        String[] parts = sort.split(",");
+        String field = parts[0];
+        String direction = parts[1];
+
+        if (direction.equalsIgnoreCase("asc")) {
+            return Sort.by(field).ascending();
+        } else {
+            return Sort.by(field).descending();
+        }
     }
 
     private Task getMyTaskById(Long id) {
