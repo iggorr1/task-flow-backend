@@ -27,6 +27,7 @@ public class TaskService {
     private final UserRepository userRepository;
 
 
+
     public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
@@ -57,6 +58,10 @@ public class TaskService {
     }
 
     public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort) {
+
+        if (sort == null || sort.isBlank()) {
+            sort = "createdAt,desc";
+        }
 
         String[] parts = sort.split(",");
         String field = parts[0];
