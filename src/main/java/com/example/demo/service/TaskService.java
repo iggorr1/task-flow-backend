@@ -85,7 +85,13 @@ public class TaskService {
         );
 
     }
+
     private Sort buildSort(String sort) {
+
+        if (!sort.contains(",")) {
+            return Sort.by("createdAt").descending();
+        }
+
         String[] parts = sort.split(",");
         String field = parts[0];
         String direction = parts[1];
