@@ -29,7 +29,8 @@ public class TaskController {
     public PagedResponseDto<TaskResponseDto> getMyTasks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt,desc") String sort
+            @RequestParam(defaultValue = "createdAt,desc") String sort,
+            @RequestParam(required = false) Boolean completed
     ) {
         return taskService.getMyTasks(page, size, sort);
     }
