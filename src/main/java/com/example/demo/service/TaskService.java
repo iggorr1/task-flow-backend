@@ -57,20 +57,29 @@ public class TaskService {
 
     }
 
-    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort, Boolean completed) {
 
         if (sort == null || sort.isBlank()) {
             sort = "createdAt,desc";
         }
 
         Sort sortObj = buildSort(sort);
-
         User user = getCurrentUser();
 
-        Page<Task> taskPage = taskRepository.findByUser(
-                user,
-                PageRequest.of(page, size, sortObj)
-        );
+        Page<Task> taskPage;
+
+        if (completed == null) {
+            taskPage = taskRepository.findByUser(
+                    user,
+                    PageRequest.of(page, size, sortObj)
+            );
+        } else {
+            taskPage = taskRepository.findByUserAndCompleted(
+                    user,
+                    completed,
+                    PageRequest.of(page, size, sortObj)
+            );
+        }
 
         List<Task> tasks = taskPage.getContent();
 
@@ -83,7 +92,6 @@ public class TaskService {
                 taskPage.getTotalElements(),
                 taskPage.getTotalPages()
         );
-
     }
 
     private Sort buildSort(String sort) {
