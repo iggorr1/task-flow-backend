@@ -9,6 +9,7 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.TaskAccessDeniedException;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,23 +65,30 @@ public class TaskService {
         }
 
         Sort sortObj = buildSort(sort);
+        Pageable pageable = PageRequest.of(page, size, sortObj);
+
         User user = getCurrentUser();
 
         Page<Task> taskPage;
 
-        if (completed == null) {
+        if (title != null && !title.isBlank()) {
+            taskPage = taskRepository.findByUserAndTitleContainingIgnoreCase(
+                    user,
+                    title,
+                    pageable
+            );
+        } else if (completed == null) {
             taskPage = taskRepository.findByUser(
                     user,
-                    PageRequest.of(page, size, sortObj)
+                    pageable
             );
         } else {
             taskPage = taskRepository.findByUserAndCompleted(
                     user,
                     completed,
-                    PageRequest.of(page, size, sortObj)
+                    pageable
             );
         }
-
 
         List<Task> tasks = taskPage.getContent();
 
