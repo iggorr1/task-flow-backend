@@ -57,7 +57,7 @@ public class TaskService {
 
     }
 
-    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort, Boolean completed) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort, Boolean completed, String title) {
 
         if (sort == null || sort.isBlank()) {
             sort = "createdAt,desc";
@@ -81,6 +81,7 @@ public class TaskService {
             );
         }
 
+
         List<Task> tasks = taskPage.getContent();
 
         return new PagedResponseDto<>(
@@ -93,6 +94,7 @@ public class TaskService {
                 taskPage.getTotalPages()
         );
     }
+
 
     private Sort buildSort(String sort) {
 

@@ -7,7 +7,7 @@ import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 
 
 @RestController
@@ -32,7 +32,7 @@ public class TaskController {
             @RequestParam(defaultValue = "createdAt,desc") String sort,
             @RequestParam(required = false) Boolean completed
     ) {
-        return taskService.getMyTasks(page, size, sort);
+        return taskService.getMyTasks(page, size, sort, completed, title);
     }
 
     @PutMapping("/{id}")
