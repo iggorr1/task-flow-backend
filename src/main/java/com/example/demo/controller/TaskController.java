@@ -30,7 +30,8 @@ public class TaskController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort,
-            @RequestParam(required = false) Boolean completed
+            @RequestParam(required = false) Boolean completed,
+            @RequestParam(required = false) String title
     ) {
         return taskService.getMyTasks(page, size, sort, completed, title);
     }
