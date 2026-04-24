@@ -32,7 +32,7 @@ public class TaskController {
             @RequestParam(defaultValue = "createdAt,desc") String sort,
             @RequestParam(required = false) Boolean completed
     ) {
-        return taskService.getMyTasks(page, size, sort, completed);
+        return taskService.getMyTasks(page, size, sort, completed, title);
     }
 
     @PutMapping("/{id}")
