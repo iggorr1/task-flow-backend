@@ -23,7 +23,7 @@ import java.util.Date;
 @Service
 public class TaskService {
 
-
+    private static final String DEFAULT_SORT_FIELD = "createdAt";
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
@@ -107,7 +107,7 @@ public class TaskService {
     private Sort buildSort(String sort) {
 
         if (!sort.contains(",")) {
-            return Sort.by("createdAt").descending();
+            return Sort.by(DEFAULT_SORT_FIELD).descending();
         }
 
         String[] parts = sort.split(",");
