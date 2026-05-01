@@ -112,9 +112,9 @@ public class TaskService {
 
         String[] parts = sort.split(",");
         String field = parts[0];
-        String direction = parts[1];
+        String direction = parts[1].toLowerCase();
 
-        if (direction.equalsIgnoreCase("asc")) {
+        if (direction.equals("asc")) {
             return Sort.by(field).ascending();
         } else {
             return Sort.by(field).descending();
