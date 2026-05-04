@@ -71,23 +71,30 @@ public class TaskService {
 
         Page<Task> taskPage;
 
-        if (title != null && !title.isBlank()) {
+        if (completed != null && title != null && !title.isBlank()) {
+            taskPage = taskRepository.findByUserAndCompletedAndTitleContainingIgnoreCase(
+                    user,
+                    completed,
+                    title,
+                    pageable
+            );
+
+        } else if (title != null && !title.isBlank()) {
             taskPage = taskRepository.findByUserAndTitleContainingIgnoreCase(
                     user,
                     title,
                     pageable
             );
-        } else if (completed == null) {
-            taskPage = taskRepository.findByUser(
-                    user,
-                    pageable
-            );
-        } else {
+
+        } else if (completed != null) {
             taskPage = taskRepository.findByUserAndCompleted(
                     user,
                     completed,
                     pageable
             );
+
+        } else {
+            taskPage = taskRepository.findByUser(user, pageable);
         }
 
         List<Task> tasks = taskPage.getContent();
