@@ -66,3 +66,76 @@ Backend REST API for managing personal tasks with authentication.
   "message": "Task not found",
   "timestamp": "2026-05-05T11:14:07.5835068"
 }
+```
+
+## Swagger / OpenAPI
+
+Swagger UI is available at:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+OpenAPI JSON is available at:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+## Authentication
+
+Most task endpoints require JWT authentication.
+
+After login, copy the token from the response and send it in the Authorization header:
+
+```text
+Authorization: Bearer <token>
+```
+
+## Example Requests
+
+### Create task
+
+```http
+POST /tasks
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "title": "Learn Spring Boot",
+  "description": "Practice REST API"
+}
+```
+
+### Get tasks with filtering and sorting
+
+```http
+GET /tasks?page=0&size=10&completed=false&title=test&sort=createdAt,desc
+Authorization: Bearer <token>
+```
+
+### Get task by id
+
+```http
+GET /tasks/1
+Authorization: Bearer <token>
+```
+
+### Mark task as completed
+
+```http
+PATCH /tasks/1/complete
+Authorization: Bearer <token>
+```
+
+## Running locally
+
+1. Clone the repository
+2. Configure PostgreSQL in `application.properties`
+3. Run the application
+4. Open Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
