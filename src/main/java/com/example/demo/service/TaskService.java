@@ -112,6 +112,9 @@ public class TaskService {
         );
     }
 
+    public TaskResponseDto getTaskById(Long id) {
+        return toDto(getMyTaskById(id));
+    }
 
     private Sort buildSort(List<String> sortParams) {
 

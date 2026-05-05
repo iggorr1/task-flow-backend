@@ -21,6 +21,11 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    @GetMapping("/{id}")
+    public TaskResponseDto getTaskById(@PathVariable Long id) {
+        return taskService.getTaskById(id);
+    }
+
     @PostMapping
     public TaskResponseDto createTask(@Valid @RequestBody CreateTaskRequestDto dto) {
 
