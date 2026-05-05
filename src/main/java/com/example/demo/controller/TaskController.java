@@ -8,6 +8,7 @@ import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 @RestController
@@ -29,7 +30,7 @@ public class TaskController {
     public PagedResponseDto<TaskResponseDto> getMyTasks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt,desc") String sort,
+            @RequestParam(required = false) List<String> sort,
             @RequestParam(required = false) Boolean completed,
             @RequestParam(required = false) String title
     ) {
