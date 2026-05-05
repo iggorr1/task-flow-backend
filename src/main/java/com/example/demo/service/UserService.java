@@ -7,6 +7,7 @@ import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.EmailAlreadyExistsException;
@@ -66,6 +67,7 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setLogin(dto.getLogin());
+        user.setRole(Role.USER);
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         user.setPassword(hashedPassword);
