@@ -120,12 +120,29 @@ public class TaskService {
 
         List<Sort.Order> orders = new ArrayList<>();
 
-        for (int i = 0; i < sortParams.size(); i += 2) {
-            String field = sortParams.get(i);
+        List<String> normalizedSortParams = new ArrayList<>();
+
+        for (String sort : sortParams) {
+            if (sort == null || sort.isBlank()) {
+                continue;
+            }
+
+            if (sort.contains(",")) {
+                String[] parts = sort.split(",");
+                for (String part : parts) {
+                    normalizedSortParams.add(part.trim());
+                }
+            } else {
+                normalizedSortParams.add(sort.trim());
+            }
+        }
+
+        for (int i = 0; i < normalizedSortParams.size(); i += 2) {
+            String field = normalizedSortParams.get(i);
 
             String direction = "desc";
-            if (i + 1 < sortParams.size()) {
-                direction = sortParams.get(i + 1);
+            if (i + 1 < normalizedSortParams.size()) {
+                direction = normalizedSortParams.get(i + 1);
             }
 
             if (direction.equalsIgnoreCase("asc")) {
@@ -141,6 +158,7 @@ public class TaskService {
 
         return Sort.by(orders);
     }
+
     private Task getMyTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(TaskNotFoundException::new);
