@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.example.demo.exception.TaskNotFoundException;
 import org.springframework.data.domain.Page;
@@ -58,10 +60,10 @@ public class TaskService {
 
     }
 
-    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, String sort, Boolean completed, String title) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, List<String> sort, Boolean completed, String title) {
 
-        if (sort == null || sort.isBlank()) {
-            sort = "createdAt,desc";
+        if (sort == null || sort.isEmpty()) {
+            sort = List.of("createdAt,desc");
         }
 
         Sort sortObj = buildSort(sort);
@@ -111,23 +113,31 @@ public class TaskService {
     }
 
 
-    private Sort buildSort(String sort) {
+    private Sort buildSort(List<String> sortParams) {
 
-        if (!sort.contains(",")) {
-            return Sort.by(DEFAULT_SORT_FIELD).descending();
+        List<Sort.Order> orders = new ArrayList<>();
+
+        for (int i = 0; i < sortParams.size(); i += 2) {
+            String field = sortParams.get(i);
+
+            String direction = "desc";
+            if (i + 1 < sortParams.size()) {
+                direction = sortParams.get(i + 1);
+            }
+
+            if (direction.equalsIgnoreCase("asc")) {
+                orders.add(Sort.Order.asc(field));
+            } else {
+                orders.add(Sort.Order.desc(field));
+            }
         }
 
-        String[] parts = sort.split(",");
-        String field = parts[0];
-        String direction = parts[1].toLowerCase();
-
-        if (direction.equals("asc")) {
-            return Sort.by(field).ascending();
-        } else {
-            return Sort.by(field).descending();
+        if (orders.isEmpty()) {
+            return Sort.by("createdAt").descending();
         }
+
+        return Sort.by(orders);
     }
-
     private Task getMyTaskById(Long id) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(TaskNotFoundException::new);
