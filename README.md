@@ -129,3 +129,13 @@ Authorization: Bearer <token>
 PATCH /tasks/1/complete
 Authorization: Bearer <token>
 ```
+
+## Running locally
+
+1. Clone the repository
+2. Configure PostgreSQL in `application.properties`
+3. Run the application
+4. Open Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
