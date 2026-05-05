@@ -33,13 +33,6 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto dto) {
 
-        if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
-            throw new BadRequestException();
-        }
 
         User user = repo.findByLogin(dto.getLogin())
                 .orElseThrow(UserNotFoundException::new);
@@ -60,22 +53,6 @@ public class UserService {
     }
 
     public UserResponseDto register(RegisterRequestDto dto) {
-
-        if (dto.getName() == null || dto.getName().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
-            throw new BadRequestException();
-        }
 
         if (repo.existsByLogin(dto.getLogin())) {
             throw new LoginAlreadyExistsException();

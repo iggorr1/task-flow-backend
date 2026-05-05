@@ -5,6 +5,7 @@ import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,12 +19,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody LoginRequestDto dto) {
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto dto) {
         return service.login(dto);
     }
 
     @PostMapping("/register")
-    public UserResponseDto register(@RequestBody RegisterRequestDto dto) {
+    public UserResponseDto register(@Valid @RequestBody RegisterRequestDto dto) {
         return service.register(dto);
     }
 }
