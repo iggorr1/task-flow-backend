@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.example.demo.dto.UpdateTaskStatusRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,6 +196,22 @@ public class TaskService {
         Task task = getMyTaskById(id);
 
         task.setCompleted(true);
+
+        Task savedTask = taskRepository.save(task);
+
+        return toDto(savedTask);
+    }
+
+    public TaskResponseDto updateTaskStatus(Long id, UpdateTaskStatusRequestDto request) {
+        Task task = getMyTaskById(id);
+
+        task.setStatus(request.getStatus());
+
+        if (request.getStatus() == TaskStatus.DONE) {
+            task.setCompleted(true);
+        } else {
+            task.setCompleted(false);
+        }
 
         Task savedTask = taskRepository.save(task);
 

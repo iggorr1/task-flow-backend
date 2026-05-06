@@ -7,6 +7,7 @@ import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.UpdateTaskStatusRequestDto;
 
 import java.util.List;
 
@@ -57,6 +58,14 @@ public class TaskController {
     @PatchMapping("/{id}/complete")
     public TaskResponseDto completeTask(@PathVariable Long id) {
         return taskService.completeTask(id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public TaskResponseDto updateTaskStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskStatusRequestDto request
+    ) {
+        return taskService.updateTaskStatus(id, request);
     }
 
 }
