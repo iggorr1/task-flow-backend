@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.User;
+import com.example.demo.dto.LoginRequestDto;
+import com.example.demo.dto.LoginResponseDto;
+import com.example.demo.dto.RegisterRequestDto;
+import com.example.demo.dto.UserResponseDto;
 import com.example.demo.service.UserService;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
@@ -16,28 +21,13 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<User> getAll() {
-        return service.getAll();
+    @PostMapping("/login")
+    public LoginResponseDto login(@Valid @RequestBody LoginRequestDto dto) {
+        return service.login(dto);
     }
 
-    @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
-        return service.getById(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
-        service.deleteById(id);
-    }
-
-    @PostMapping
-    public User createUser(@RequestParam String name) {
-        return service.createUser(name);
-    }
-
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestParam String name) {
-        return service.updateUser(id, name);
+    @PostMapping("/register")
+    public UserResponseDto register(@Valid @RequestBody RegisterRequestDto dto) {
+        return service.register(dto);
     }
 }
