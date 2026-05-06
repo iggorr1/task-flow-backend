@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 
 import com.example.demo.entity.Task;
+import com.example.demo.entity.TaskStatus;
 import com.example.demo.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,18 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
     Page<Task> findByUserAndTitleContainingIgnoreCase(
             User user,
+            String title,
+            Pageable pageable
+    );
+    Page<Task> findByUserAndStatus(
+            User user,
+            TaskStatus status,
+            Pageable pageable
+    );
+
+    Page<Task> findByUserAndStatusAndTitleContainingIgnoreCase(
+            User user,
+            TaskStatus status,
             String title,
             Pageable pageable
     );

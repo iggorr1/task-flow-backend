@@ -1,15 +1,19 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.PagedResponseDto;
-import com.example.demo.entity.TaskStatus;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
+import com.example.demo.dto.UpdateTaskStatusRequestDto;
 import com.example.demo.entity.Task;
+import com.example.demo.entity.TaskStatus;
 import com.example.demo.entity.User;
 import com.example.demo.exception.TaskAccessDeniedException;
+import com.example.demo.exception.TaskNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,11 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.demo.exception.TaskNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.Date;
 
 @Service
 public class TaskService {
@@ -62,7 +61,14 @@ public class TaskService {
 
     }
 
-    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, List<String> sort, Boolean completed, String title) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(
+            int page,
+            int size,
+            List<String> sort,
+            Boolean completed,
+            String title,
+            TaskStatus status
+    ) {
 
         if (sort == null || sort.isEmpty()) {
             sort = List.of("createdAt,desc");
@@ -75,7 +81,22 @@ public class TaskService {
 
         Page<Task> taskPage;
 
-        if (completed != null && title != null && !title.isBlank()) {
+        if (status != null && title != null && !title.isBlank()) {
+            taskPage = taskRepository.findByUserAndStatusAndTitleContainingIgnoreCase(
+                    user,
+                    status,
+                    title,
+                    pageable
+            );
+
+        } else if (status != null) {
+            taskPage = taskRepository.findByUserAndStatus(
+                    user,
+                    status,
+                    pageable
+            );
+
+        } else if (completed != null && title != null && !title.isBlank()) {
             taskPage = taskRepository.findByUserAndCompletedAndTitleContainingIgnoreCase(
                     user,
                     completed,
@@ -195,6 +216,23 @@ public class TaskService {
         Task task = getMyTaskById(id);
 
         task.setCompleted(true);
+        task.setStatus(TaskStatus.DONE);
+
+        Task savedTask = taskRepository.save(task);
+
+        return toDto(savedTask);
+    }
+
+    public TaskResponseDto updateTaskStatus(Long id, UpdateTaskStatusRequestDto request) {
+        Task task = getMyTaskById(id);
+
+        task.setStatus(request.getStatus());
+
+        if (request.getStatus() == TaskStatus.DONE) {
+            task.setCompleted(true);
+        } else {
+            task.setCompleted(false);
+        }
 
         Task savedTask = taskRepository.save(task);
 
@@ -211,6 +249,7 @@ public class TaskService {
                 task.getStatus()
         );
     }
+
 
 }
 

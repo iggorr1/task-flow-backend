@@ -10,6 +10,7 @@ Backend REST API for managing personal tasks with authentication.
 - JWT
 - PostgreSQL
 - Spring Data JPA / Hibernate
+- Swagger / OpenAPI
 
 ## Features
 
@@ -22,11 +23,12 @@ Backend REST API for managing personal tasks with authentication.
 - Update tasks
 - Delete tasks
 - Mark task as completed
+- Task status: `TODO`, `IN_PROGRESS`, `DONE`
 - Pagination
 - Sorting
-- Filtering by completed and title
+- Filtering by completed, title, and status
 - Global exception handling
-
+- Role-based access control: `USER`, `ADMIN`
 
 ## API Endpoints
 
@@ -47,6 +49,13 @@ Backend REST API for managing personal tasks with authentication.
 | PUT | `/tasks/{id}` | Update task |
 | DELETE | `/tasks/{id}` | Delete task |
 | PATCH | `/tasks/{id}/complete` | Mark task as completed |
+| PATCH | `/tasks/{id}/status` | Update task status |
+
+### Admin
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/admin/test` | Test admin-only access |
 
 ## Query Parameters for GET /tasks
 
@@ -57,6 +66,22 @@ Backend REST API for managing personal tasks with authentication.
 | `sort` | `sort=createdAt,desc` | Sort field and direction |
 | `completed` | `completed=true` | Filter by completion status |
 | `title` | `title=test` | Filter by title contains, ignore case |
+| `status` | `status=IN_PROGRESS` | Filter by task status |
+
+## Task Status
+
+Each task has a status:
+
+```text
+TODO
+IN_PROGRESS
+DONE
+```
+
+New tasks are created with status `TODO`.
+
+When task status is changed to `DONE`, the `completed` field becomes `true`.
+When task status is changed to `TODO` or `IN_PROGRESS`, the `completed` field becomes `false`.
 
 ## Error Response Format
 
@@ -65,6 +90,20 @@ Backend REST API for managing personal tasks with authentication.
   "status": 404,
   "message": "Task not found",
   "timestamp": "2026-05-05T11:14:07.5835068"
+}
+```
+
+Validation errors include field-level details:
+
+```json
+{
+  "status": 400,
+  "message": "Validation failed",
+  "timestamp": "2026-05-05T11:14:07.5835068",
+  "errors": {
+    "login": "must not be blank",
+    "password": "must not be blank"
+  }
 }
 ```
 
@@ -112,7 +151,7 @@ Content-Type: application/json
 ### Get tasks with filtering and sorting
 
 ```http
-GET /tasks?page=0&size=10&completed=false&title=test&sort=createdAt,desc
+GET /tasks?page=0&size=10&status=IN_PROGRESS&title=test&sort=createdAt,desc
 Authorization: Bearer <token>
 ```
 
@@ -130,6 +169,37 @@ PATCH /tasks/1/complete
 Authorization: Bearer <token>
 ```
 
+### Update task status
+
+```http
+PATCH /tasks/1/status
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "status": "IN_PROGRESS"
+}
+```
+
+### Admin-only endpoint
+
+```http
+GET /admin/test
+Authorization: Bearer <admin_token>
+```
+
+## Tests
+
+Added integration test for main task flow:
+
+- register user
+- login and receive JWT
+- create task
+- update task status
+- filter tasks by status
+
 ## Running locally
 
 1. Clone the repository
@@ -139,3 +209,18 @@ Authorization: Bearer <token>
 
 ```text
 http://localhost:8080/swagger-ui/index.html
+```
+
+## Docker
+
+PostgreSQL can be started with Docker Compose:
+
+```bash
+docker compose up -d
+```
+This starts a PostgreSQL container for local development.
+
+To stop it:
+```
+docker compose down
+```
