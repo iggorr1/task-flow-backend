@@ -190,6 +190,16 @@ GET /admin/test
 Authorization: Bearer <admin_token>
 ```
 
+## Tests
+
+Added integration test for main task flow:
+
+- register user
+- login and receive JWT
+- create task
+- update task status
+- filter tasks by status
+
 ## Running locally
 
 1. Clone the repository
