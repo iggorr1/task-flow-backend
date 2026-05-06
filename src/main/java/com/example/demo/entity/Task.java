@@ -40,6 +40,17 @@ public class Task {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
     public boolean isCompleted() {
         return completed;
     }

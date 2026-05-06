@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.PagedResponseDto;
+import com.example.demo.entity.TaskStatus;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
@@ -53,6 +54,7 @@ public class TaskService {
         task.setTitle(title);
         task.setDescription(description);
         task.setUser(user);
+        task.setStatus(TaskStatus.TODO);
 
         Task savedTask = taskRepository.save(task);
 
@@ -205,7 +207,8 @@ public class TaskService {
                 task.getTitle(),
                 task.getDescription(),
                 task.getCreatedAt(),
-                task.isCompleted()
+                task.isCompleted(),
+                task.getStatus()
         );
     }
 
