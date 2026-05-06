@@ -25,6 +25,7 @@ import java.util.Date;
     @Enumerated(EnumType.STRING)
     private Role role;
 
+
     public User() {}
 
     public User(Long id, String name) {
