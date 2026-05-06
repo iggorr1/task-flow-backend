@@ -219,6 +219,7 @@ public class TaskService {
         Task task = getMyTaskById(id);
 
         task.setCompleted(true);
+        task.setStatus(TaskStatus.DONE);
 
         Task savedTask = taskRepository.save(task);
 
