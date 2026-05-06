@@ -1,29 +1,26 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.PagedResponseDto;
-import com.example.demo.entity.TaskStatus;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.dto.TaskResponseDto;
 import com.example.demo.dto.UpdateTaskRequestDto;
+import com.example.demo.dto.UpdateTaskStatusRequestDto;
 import com.example.demo.entity.Task;
+import com.example.demo.entity.TaskStatus;
 import com.example.demo.entity.User;
 import com.example.demo.exception.TaskAccessDeniedException;
+import com.example.demo.exception.TaskNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.repository.TaskRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.example.demo.dto.UpdateTaskStatusRequestDto;
-import com.example.demo.entity.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.demo.exception.TaskNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.Date;
 
 @Service
 public class TaskService {

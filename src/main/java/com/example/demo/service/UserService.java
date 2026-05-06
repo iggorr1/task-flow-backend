@@ -1,8 +1,5 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RegisterRequestDto;
@@ -18,6 +15,9 @@ import com.example.demo.security.JwtService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 @Service
 public class UserService {

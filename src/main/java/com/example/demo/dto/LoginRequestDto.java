@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import java.util.Date;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDto {
