@@ -1,17 +1,26 @@
 package com.example.demo.exception;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class ErrorResponseDto {
 
     private int status;
     private String message;
     private LocalDateTime timestamp;
+    private Map<String, String> errors;
 
     public ErrorResponseDto(int status, String message, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
+    }
+
+    public ErrorResponseDto(int status, String message, LocalDateTime timestamp, Map<String, String> errors) {
+        this.status = status;
+        this.message = message;
+        this.timestamp = timestamp;
+        this.errors = errors;
     }
 
     public int getStatus() {
@@ -24,5 +33,9 @@ public class ErrorResponseDto {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public Map<String, String> getErrors() {
+        return errors;
     }
 }

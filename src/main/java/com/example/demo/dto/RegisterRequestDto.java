@@ -1,10 +1,19 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class RegisterRequestDto {
 
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String email;
+
+    @NotBlank
     private String login;
+
+    @NotBlank
     private String password;
 
     public RegisterRequestDto() {

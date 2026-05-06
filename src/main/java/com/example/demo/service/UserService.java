@@ -7,6 +7,7 @@ import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.EmailAlreadyExistsException;
@@ -33,13 +34,6 @@ public class UserService {
 
     public LoginResponseDto login(LoginRequestDto dto) {
 
-        if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
-            throw new BadRequestException();
-        }
 
         User user = repo.findByLogin(dto.getLogin())
                 .orElseThrow(UserNotFoundException::new);
@@ -61,22 +55,6 @@ public class UserService {
 
     public UserResponseDto register(RegisterRequestDto dto) {
 
-        if (dto.getName() == null || dto.getName().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getLogin() == null || dto.getLogin().isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
-            throw new BadRequestException();
-        }
-
         if (repo.existsByLogin(dto.getLogin())) {
             throw new LoginAlreadyExistsException();
         }
@@ -89,6 +67,7 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setLogin(dto.getLogin());
+        user.setRole(Role.USER);
 
         String hashedPassword = passwordEncoder.encode(dto.getPassword());
         user.setPassword(hashedPassword);

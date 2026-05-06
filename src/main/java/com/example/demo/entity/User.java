@@ -22,6 +22,9 @@ import java.util.Date;
 
     private Date createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     public User() {}
 
     public User(Long id, String name) {
@@ -75,6 +78,14 @@ import java.util.Date;
 
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 

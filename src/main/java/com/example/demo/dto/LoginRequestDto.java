@@ -1,10 +1,14 @@
 package com.example.demo.dto;
 
 import java.util.Date;
+import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDto {
 
+    @NotBlank
     private String login;
+
+    @NotBlank
     private String password;
 
     public void setLogin(String login) {
@@ -22,5 +26,6 @@ public class LoginRequestDto {
     public String getPassword() {
         return password;
     }
+
 
 }
