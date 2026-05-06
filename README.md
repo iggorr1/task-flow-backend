@@ -217,3 +217,10 @@ PostgreSQL can be started with Docker Compose:
 
 ```bash
 docker compose up -d
+```
+This starts a PostgreSQL container for local development.
+
+To stop it:
+```
+docker compose down
+```
