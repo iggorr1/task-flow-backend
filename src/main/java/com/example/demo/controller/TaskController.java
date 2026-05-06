@@ -8,6 +8,7 @@ import com.example.demo.dto.UpdateTaskRequestDto;
 import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.dto.UpdateTaskStatusRequestDto;
+import com.example.demo.entity.TaskStatus;
 
 import java.util.List;
 
@@ -38,9 +39,10 @@ public class TaskController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) List<String> sort,
             @RequestParam(required = false) Boolean completed,
-            @RequestParam(required = false) String title
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) TaskStatus status
     ) {
-        return taskService.getMyTasks(page, size, sort, completed, title);
+        return taskService.getMyTasks(page, size, sort, completed, title, status);
     }
 
     @PutMapping("/{id}")

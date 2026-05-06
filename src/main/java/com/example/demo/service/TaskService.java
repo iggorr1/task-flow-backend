@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.demo.dto.UpdateTaskStatusRequestDto;
+import com.example.demo.entity.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,14 @@ public class TaskService {
 
     }
 
-    public PagedResponseDto<TaskResponseDto> getMyTasks(int page, int size, List<String> sort, Boolean completed, String title) {
+    public PagedResponseDto<TaskResponseDto> getMyTasks(
+            int page,
+            int size,
+            List<String> sort,
+            Boolean completed,
+            String title,
+            TaskStatus status
+    ) {
 
         if (sort == null || sort.isEmpty()) {
             sort = List.of("createdAt,desc");
@@ -76,7 +84,22 @@ public class TaskService {
 
         Page<Task> taskPage;
 
-        if (completed != null && title != null && !title.isBlank()) {
+        if (status != null && title != null && !title.isBlank()) {
+            taskPage = taskRepository.findByUserAndStatusAndTitleContainingIgnoreCase(
+                    user,
+                    status,
+                    title,
+                    pageable
+            );
+
+        } else if (status != null) {
+            taskPage = taskRepository.findByUserAndStatus(
+                    user,
+                    status,
+                    pageable
+            );
+
+        } else if (completed != null && title != null && !title.isBlank()) {
             taskPage = taskRepository.findByUserAndCompletedAndTitleContainingIgnoreCase(
                     user,
                     completed,
@@ -228,6 +251,7 @@ public class TaskService {
                 task.getStatus()
         );
     }
+
 
 }
 
