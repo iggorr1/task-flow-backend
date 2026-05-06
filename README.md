@@ -210,3 +210,10 @@ Added integration test for main task flow:
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
+
+## Docker
+
+PostgreSQL can be started with Docker Compose:
+
+```bash
+docker compose up -d
