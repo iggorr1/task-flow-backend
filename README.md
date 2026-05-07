@@ -348,7 +348,7 @@ Do not commit real secrets to GitHub.
 
 ```bash
 git clone https://github.com/iggorr1/task-flow-backend.git
-cd demo
+cd task-flow-backend
 ```
 
 2. Configure environment variables or `application.properties`.
