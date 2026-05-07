@@ -1,6 +1,32 @@
-# Task Manager API
+# Task Flow — Backend API
 
-Backend REST API for managing personal tasks with authentication.
+Backend REST API for a personal task management application.
+
+The API supports user registration, JWT authentication, task CRUD operations, task status management, filtering, sorting, pagination, and role-based access control.
+
+---
+
+## Live Demo
+
+Frontend:
+
+```text
+https://wwwho.lol
+```
+
+Production API:
+
+```text
+https://api.wwwho.lol
+```
+
+Frontend repository:
+
+```text
+https://github.com/iggorr1/task-manager-frontend
+```
+
+---
 
 ## Tech Stack
 
@@ -10,25 +36,44 @@ Backend REST API for managing personal tasks with authentication.
 - JWT
 - PostgreSQL
 - Spring Data JPA / Hibernate
+- Maven
+- Docker
+- Docker Compose
 - Swagger / OpenAPI
+
+---
 
 ## Features
 
 - User registration
 - User login
 - JWT authentication
+- Password hashing with BCrypt
 - Create tasks
-- Get own tasks
+- Get current user's tasks
 - Get task by id
 - Update tasks
 - Delete tasks
 - Mark task as completed
-- Task status: `TODO`, `IN_PROGRESS`, `DONE`
+- Task status management:
+    - `TODO`
+    - `IN_PROGRESS`
+    - `DONE`
 - Pagination
 - Sorting
-- Filtering by completed, title, and status
+- Filtering by:
+    - completed
+    - title
+    - status
 - Global exception handling
-- Role-based access control: `USER`, `ADMIN`
+- Role-based access control:
+    - `USER`
+    - `ADMIN`
+- Dockerized backend
+- PostgreSQL database
+- Production deployment through Docker Compose and Cloudflare Tunnel
+
+---
 
 ## API Endpoints
 
@@ -57,7 +102,9 @@ Backend REST API for managing personal tasks with authentication.
 |---|---|---|
 | GET | `/admin/test` | Test admin-only access |
 
-## Query Parameters for GET /tasks
+---
+
+## Query Parameters for `GET /tasks`
 
 | Parameter | Example | Description |
 |---|---|---|
@@ -67,6 +114,15 @@ Backend REST API for managing personal tasks with authentication.
 | `completed` | `completed=true` | Filter by completion status |
 | `title` | `title=test` | Filter by title contains, ignore case |
 | `status` | `status=IN_PROGRESS` | Filter by task status |
+
+Example:
+
+```http
+GET /tasks?page=0&size=10&status=IN_PROGRESS&title=test&sort=createdAt,desc
+Authorization: Bearer <token>
+```
+
+---
 
 ## Task Status
 
@@ -78,60 +134,69 @@ IN_PROGRESS
 DONE
 ```
 
-New tasks are created with status `TODO`.
+New tasks are created with status:
+
+```text
+TODO
+```
 
 When task status is changed to `DONE`, the `completed` field becomes `true`.
+
 When task status is changed to `TODO` or `IN_PROGRESS`, the `completed` field becomes `false`.
 
-## Error Response Format
-
-```json
-{
-  "status": 404,
-  "message": "Task not found",
-  "timestamp": "2026-05-05T11:14:07.5835068"
-}
-```
-
-Validation errors include field-level details:
-
-```json
-{
-  "status": 400,
-  "message": "Validation failed",
-  "timestamp": "2026-05-05T11:14:07.5835068",
-  "errors": {
-    "login": "must not be blank",
-    "password": "must not be blank"
-  }
-}
-```
-
-## Swagger / OpenAPI
-
-Swagger UI is available at:
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-OpenAPI JSON is available at:
-
-```text
-http://localhost:8080/v3/api-docs
-```
+---
 
 ## Authentication
 
 Most task endpoints require JWT authentication.
 
-After login, copy the token from the response and send it in the Authorization header:
+After login, copy the token from the response and send it in the `Authorization` header:
 
 ```text
 Authorization: Bearer <token>
 ```
 
+Login response example:
+
+```json
+{
+  "token": "jwt-token"
+}
+```
+
+---
+
 ## Example Requests
+
+### Register
+
+```http
+POST /users/register
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "Igor",
+  "email": "igor@example.com",
+  "login": "igor",
+  "password": "password123"
+}
+```
+
+### Login
+
+```http
+POST /users/login
+Content-Type: application/json
+```
+
+```json
+{
+  "login": "igor",
+  "password": "password123"
+}
+```
 
 ### Create task
 
@@ -148,7 +213,7 @@ Content-Type: application/json
 }
 ```
 
-### Get tasks with filtering and sorting
+### Get tasks
 
 ```http
 GET /tasks?page=0&size=10&status=IN_PROGRESS&title=test&sort=createdAt,desc
@@ -160,6 +225,21 @@ Authorization: Bearer <token>
 ```http
 GET /tasks/1
 Authorization: Bearer <token>
+```
+
+### Update task
+
+```http
+PUT /tasks/1
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+```json
+{
+  "title": "Updated title",
+  "description": "Updated description"
+}
 ```
 
 ### Mark task as completed
@@ -183,6 +263,13 @@ Content-Type: application/json
 }
 ```
 
+### Delete task
+
+```http
+DELETE /tasks/1
+Authorization: Bearer <token>
+```
+
 ### Admin-only endpoint
 
 ```http
@@ -190,37 +277,195 @@ GET /admin/test
 Authorization: Bearer <admin_token>
 ```
 
-## Tests
+---
 
-Added integration test for main task flow:
+## Error Response Format
 
-- register user
-- login and receive JWT
-- create task
-- update task status
-- filter tasks by status
+Basic error response:
 
-## Running locally
+```json
+{
+  "status": 404,
+  "message": "Task not found",
+  "timestamp": "2026-05-05T11:14:07.5835068"
+}
+```
 
-1. Clone the repository
-2. Configure PostgreSQL in `application.properties`
-3. Run the application
-4. Open Swagger UI:
+Validation error response:
+
+```json
+{
+  "status": 400,
+  "message": "Validation failed",
+  "timestamp": "2026-05-05T11:14:07.5835068",
+  "errors": {
+    "login": "must not be blank",
+    "password": "must not be blank"
+  }
+}
+```
+
+---
+
+## Swagger / OpenAPI
+
+Swagger UI:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
-## Docker
+OpenAPI JSON:
 
-PostgreSQL can be started with Docker Compose:
+```text
+http://localhost:8080/v3/api-docs
+```
+
+---
+
+## Environment Variables
+
+The application uses environment variables for database and JWT configuration.
+
+Example:
+
+```env
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/demo
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=your_password
+
+JWT_SECRET=your_long_secret_key
+JWT_EXPIRATION=86400000
+```
+
+Do not commit real secrets to GitHub.
+
+---
+
+## Running Locally
+
+1. Clone the repository:
 
 ```bash
-docker compose up -d
+git clone https://github.com/iggorr1/demo.git
+cd demo
 ```
-This starts a PostgreSQL container for local development.
 
-To stop it:
+2. Configure environment variables or `application.properties`.
+
+3. Start PostgreSQL.
+
+4. Run the application:
+
+```bash
+./mvnw spring-boot:run
 ```
-docker compose down
+
+On Windows:
+
+```powershell
+.\mvnw.cmd spring-boot:run
 ```
+
+5. Open Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+---
+
+## Docker
+
+Build backend image:
+
+```bash
+docker build -t task-flow-backend .
+```
+
+Run backend container:
+
+```bash
+docker run -p 8080:8080 task-flow-backend
+```
+
+In production, the backend runs through Docker Compose together with:
+
+- PostgreSQL
+- Frontend
+- Cloudflare Tunnel
+
+---
+
+## Tests
+
+The project includes integration tests for the main task flow:
+
+- Register user
+- Login and receive JWT
+- Create task
+- Update task status
+- Filter tasks by status
+
+Run tests:
+
+```bash
+./mvnw test
+```
+
+On Windows:
+
+```powershell
+.\mvnw.cmd test
+```
+
+---
+
+## Deployment
+
+The production version runs on an Ubuntu Server using Docker Compose.
+
+Deployment flow:
+
+```text
+GitHub
+↓
+git pull on server
+↓
+Docker Compose rebuild
+↓
+Cloudflare Tunnel
+↓
+api.wwwho.lol
+```
+
+Server deploy command:
+
+```bash
+cd ~/apps/task-flow
+./deploy.sh
+```
+
+---
+
+## Current Status
+
+Implemented:
+
+- Authentication
+- JWT security
+- Task CRUD
+- Task status workflow
+- Filtering / sorting / pagination
+- PostgreSQL persistence
+- Docker deployment
+- Production API domain
+- Frontend integration
+
+Planned improvements:
+
+- Better backend error messages
+- `/users/me` endpoint
+- Task priority
+- Due dates
+- More tests
