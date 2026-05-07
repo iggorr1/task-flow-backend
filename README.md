@@ -347,7 +347,7 @@ Do not commit real secrets to GitHub.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/iggorr1/demo.git
+git clone https://github.com/iggorr1/task-flow-backend.git
 cd demo
 ```
 
