@@ -246,6 +246,7 @@ public class TaskService {
                 task.getDescription(),
                 task.getCreatedAt(),
                 task.isCompleted(),
+                task.isPinned(),
                 task.getStatus()
         );
     }

@@ -13,12 +13,13 @@ public class TaskResponseDto {
     private boolean completed;
     private TaskStatus status;
 
-    public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed, TaskStatus status) {
+    public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed, boolean pinned, TaskStatus status) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;
         this.completed = completed;
+        this.pinned = pinned;
         this.status = status;
     }
 
@@ -68,5 +69,13 @@ public class TaskResponseDto {
 
     public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 }

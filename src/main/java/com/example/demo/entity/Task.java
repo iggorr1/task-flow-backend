@@ -15,6 +15,7 @@ public class Task {
     private String description;
     private Date createdAt;
     private boolean completed;
+    private boolean pinned = false;
 
     @PrePersist
     protected void onCreate() {
@@ -57,6 +58,14 @@ public class Task {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 }
 
