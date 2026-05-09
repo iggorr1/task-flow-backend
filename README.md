@@ -54,11 +54,16 @@ https://github.com/iggorr1/task-manager-frontend
 - Get task by id
 - Update tasks
 - Delete tasks
+- Pin and unpin important tasks
 - Mark task as completed
 - Task status management:
     - `TODO`
     - `IN_PROGRESS`
     - `DONE`
+- Task input validation:
+    - title is required
+    - title max length is 120 characters
+    - description max length is 255 characters
 - Pagination
 - Sorting
 - Filtering by:
@@ -95,6 +100,7 @@ https://github.com/iggorr1/task-manager-frontend
 | DELETE | `/tasks/{id}` | Delete task |
 | PATCH | `/tasks/{id}/complete` | Mark task as completed |
 | PATCH | `/tasks/{id}/status` | Update task status |
+| PATCH | `/tasks/{id}/pin` | Pin or unpin task |
 
 ### Admin
 
@@ -262,6 +268,17 @@ Content-Type: application/json
   "status": "IN_PROGRESS"
 }
 ```
+
+### Pin / unpin task
+
+```http
+PATCH /tasks/1/pin
+Authorization: Bearer <token>
+```
+
+This endpoint toggles the task `pinned` state.
+
+Pinned tasks can be displayed first on the frontend.
 
 ### Delete task
 
@@ -454,18 +471,25 @@ Implemented:
 
 - Authentication
 - JWT security
+- Password hashing with BCrypt
 - Task CRUD
 - Task status workflow
+- Task pinning
 - Filtering / sorting / pagination
+- Title search
+- Request validation for task title and description
+- Global exception handling
 - PostgreSQL persistence
 - Docker deployment
 - Production API domain
 - Frontend integration
+- Swagger / OpenAPI documentation
 
 Planned improvements:
 
-- Better backend error messages
+- Telegram task reminders
 - `/users/me` endpoint
 - Task priority
 - Due dates
 - More tests
+- More detailed production deployment notes
