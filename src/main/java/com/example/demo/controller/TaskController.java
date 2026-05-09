@@ -66,4 +66,9 @@ public class TaskController {
         return taskService.updateTaskStatus(id, request);
     }
 
+    @PatchMapping("/{id}/pin")
+    public TaskResponseDto togglePinTask(@PathVariable Long id) {
+        return taskService.togglePinTask(id);
+    }
+
 }

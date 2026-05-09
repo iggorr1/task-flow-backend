@@ -12,6 +12,7 @@ public class TaskResponseDto {
     private Date createdAt;
     private boolean completed;
     private TaskStatus status;
+    private boolean pinned;
 
     public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed, boolean pinned, TaskStatus status) {
         this.id = id;

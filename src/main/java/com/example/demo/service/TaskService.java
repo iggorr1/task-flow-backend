@@ -239,6 +239,16 @@ public class TaskService {
         return toDto(savedTask);
     }
 
+    public TaskResponseDto togglePinTask(Long id) {
+        Task task = getMyTaskById(id);
+
+        task.setPinned(!task.isPinned());
+
+        Task savedTask = taskRepository.save(task);
+
+        return toDto(savedTask);
+    }
+
     private TaskResponseDto toDto(Task task) {
         return new TaskResponseDto(
                 task.getId(),
