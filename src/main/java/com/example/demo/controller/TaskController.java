@@ -5,6 +5,7 @@ import com.example.demo.entity.TaskStatus;
 import com.example.demo.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.dto.UpdateTaskReminderRequestDto;
 
 import java.util.List;
 
@@ -69,6 +70,14 @@ public class TaskController {
     @PatchMapping("/{id}/pin")
     public TaskResponseDto togglePinTask(@PathVariable Long id) {
         return taskService.togglePinTask(id);
+    }
+
+    @PatchMapping("/{id}/reminder")
+    public TaskResponseDto updateTaskReminder(
+            @PathVariable Long id,
+            @RequestBody UpdateTaskReminderRequestDto requestDto
+    ) {
+        return taskService.updateTaskReminder(id, requestDto.getReminderAt());
     }
 
 }

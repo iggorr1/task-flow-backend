@@ -13,8 +13,10 @@ public class TaskResponseDto {
     private boolean completed;
     private TaskStatus status;
     private boolean pinned;
+    private Date reminderAt;
+    private boolean reminderSent;
 
-    public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed, boolean pinned, TaskStatus status) {
+    public TaskResponseDto(Long id, String title, String description, Date createdAt, boolean completed, boolean pinned, TaskStatus status,Date reminderAt, boolean reminderSent) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -22,6 +24,8 @@ public class TaskResponseDto {
         this.completed = completed;
         this.pinned = pinned;
         this.status = status;
+        this.reminderAt = reminderAt;
+        this.reminderSent = reminderSent;
     }
 
     public Long getId() {
@@ -78,5 +82,13 @@ public class TaskResponseDto {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public Date getReminderAt() {
+        return reminderAt;
+    }
+
+    public boolean isReminderSent() {
+        return reminderSent;
     }
 }

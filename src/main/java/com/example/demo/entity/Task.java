@@ -16,6 +16,8 @@ public class Task {
     private Date createdAt;
     private boolean completed;
     private boolean pinned = false;
+    private Date reminderAt;
+    private boolean reminderSent = false;
 
     @PrePersist
     protected void onCreate() {
@@ -66,6 +68,22 @@ public class Task {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public Date getReminderAt() {
+        return reminderAt;
+    }
+
+    public void setReminderAt(Date reminderAt) {
+        this.reminderAt = reminderAt;
+    }
+
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
     }
 }
 

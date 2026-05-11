@@ -3,6 +3,8 @@ package com.example.demo.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 public class UpdateTaskRequestDto {
 
     @NotBlank(message = "Title is required")
@@ -11,6 +13,8 @@ public class UpdateTaskRequestDto {
 
     @Size(max = 255, message = "Description is too long. Maximum 255 characters.")
     private String description;
+
+    private Date reminderAt;
 
     public UpdateTaskRequestDto(String title, String description) {
         this.title = title;
@@ -29,7 +33,15 @@ public class UpdateTaskRequestDto {
         return description;
     }
 
+    public Date getReminderAt() {
+        return reminderAt;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setReminderAt(Date reminderAt) {
+        this.reminderAt = reminderAt;
     }
 }

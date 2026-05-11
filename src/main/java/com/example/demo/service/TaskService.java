@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -54,11 +55,11 @@ public class TaskService {
         task.setDescription(description);
         task.setUser(user);
         task.setStatus(TaskStatus.TODO);
+        task.setReminderSent(false);
 
         Task savedTask = taskRepository.save(task);
 
         return toDto(savedTask);
-
     }
 
     public PagedResponseDto<TaskResponseDto> getMyTasks(
@@ -249,6 +250,24 @@ public class TaskService {
         return toDto(savedTask);
     }
 
+    public TaskResponseDto updateTaskReminder(Long taskId, Date reminderAt) {
+        User currentUser = getCurrentUser();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(TaskNotFoundException::new);
+
+        if (!task.getUser().getId().equals(currentUser.getId())) {
+            throw new TaskAccessDeniedException();
+        }
+
+        task.setReminderAt(reminderAt);
+        task.setReminderSent(false);
+
+        Task savedTask = taskRepository.save(task);
+
+        return toDto(savedTask);
+    }
+
     private TaskResponseDto toDto(Task task) {
         return new TaskResponseDto(
                 task.getId(),
@@ -257,7 +276,9 @@ public class TaskService {
                 task.getCreatedAt(),
                 task.isCompleted(),
                 task.isPinned(),
-                task.getStatus()
+                task.getStatus(),
+                task.getReminderAt(),
+                task.isReminderSent()
         );
     }
 
