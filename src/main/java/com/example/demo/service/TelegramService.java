@@ -10,6 +10,9 @@ import com.example.demo.repository.TelegramLinkCodeRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.example.demo.dto.TelegramUpdateDto;
+import org.springframework.beans.factory.annotation.Value;
+
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -18,8 +21,14 @@ import java.util.Date;
 @Service
 public class TelegramService {
 
+    @Value("${telegram.bot.username}")
+    private String botUsername;
+
+    @Value("${telegram.webhook.secret}")
+    private String telegramWebhookSecret;
+
     private static final long LINK_TOKEN_TTL_MS = 10 * 60 * 1000;
-    private static final String BOT_USERNAME = "taskflow_reminders_ik_bot"; // later move to env
+
 
     private final TelegramLinkCodeRepository telegramLinkCodeRepository;
     private final TelegramConnectionRepository telegramConnectionRepository;
@@ -53,7 +62,7 @@ public class TelegramService {
 
         telegramLinkCodeRepository.save(linkCode);
 
-        String link = "https://t.me/" + BOT_USERNAME + "?start=" + token;
+        String link = "https://t.me/" + botUsername + "?start=" + token;
 
         return new TelegramLinkResponseDto(link, expiresAt);
     }
@@ -125,4 +134,37 @@ public class TelegramService {
                 .withoutPadding()
                 .encodeToString(bytes);
     }
+
+    public void handleWebhookUpdate(TelegramUpdateDto update) {
+        if (update == null || update.getMessage() == null) {
+            return;
+        }
+
+        String text = update.getMessage().getText();
+
+        if (text == null || !text.startsWith("/start ")) {
+            return;
+        }
+
+        String token = text.substring("/start ".length()).trim();
+
+        if (token.isBlank()) {
+            return;
+        }
+
+        Long chatId = update.getMessage().getChat().getId();
+        Long telegramUserId = update.getMessage().getFrom().getId();
+        String username = update.getMessage().getFrom().getUsername();
+
+        connectTelegramByToken(token, chatId, telegramUserId, username);
+    }
+
+
+
+    public boolean isValidWebhookSecret(String secretHeader) {
+        return telegramWebhookSecret != null
+                && !telegramWebhookSecret.isBlank()
+                && telegramWebhookSecret.equals(secretHeader);
+    }
+
 }
