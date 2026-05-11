@@ -19,7 +19,7 @@ import java.util.Date;
 public class TelegramService {
 
     private static final long LINK_TOKEN_TTL_MS = 10 * 60 * 1000;
-    private static final String BOT_USERNAME = "TaskFlowBot"; // later move to env
+    private static final String BOT_USERNAME = "taskflow_reminders_ik_bot"; // later move to env
 
     private final TelegramLinkCodeRepository telegramLinkCodeRepository;
     private final TelegramConnectionRepository telegramConnectionRepository;
@@ -73,6 +73,41 @@ public class TelegramService {
     public void disconnect() {
         User user = getCurrentUser();
         telegramConnectionRepository.deleteByUser(user);
+    }
+
+    public void connectTelegramByToken(
+            String token,
+            Long telegramChatId,
+            Long telegramUserId,
+            String telegramUsername
+    ) {
+        TelegramLinkCode linkCode = telegramLinkCodeRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid Telegram link token"));
+
+        if (linkCode.isUsed()) {
+            throw new RuntimeException("Telegram link token already used");
+        }
+
+        if (linkCode.getExpiresAt().before(new Date())) {
+            throw new RuntimeException("Telegram link token expired");
+        }
+
+        User user = linkCode.getUser();
+
+        telegramConnectionRepository.findByUser(user)
+                .ifPresent(existingConnection -> telegramConnectionRepository.delete(existingConnection));
+
+        TelegramConnection connection = new TelegramConnection();
+        connection.setUser(user);
+        connection.setTelegramChatId(telegramChatId);
+        connection.setTelegramUserId(telegramUserId);
+        connection.setTelegramUsername(telegramUsername);
+        connection.setConnectedAt(new Date());
+
+        telegramConnectionRepository.save(connection);
+
+        linkCode.setUsed(true);
+        telegramLinkCodeRepository.save(linkCode);
     }
 
     private User getCurrentUser() {

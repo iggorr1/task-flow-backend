@@ -29,4 +29,14 @@ public class TelegramController {
     public void disconnect() {
         telegramService.disconnect();
     }
+
+    @PostMapping("/dev/connect")
+    public void devConnectTelegram(
+            @RequestParam String token,
+            @RequestParam Long chatId,
+            @RequestParam Long telegramUserId,
+            @RequestParam(required = false) String username
+    ) {
+        telegramService.connectTelegramByToken(token, chatId, telegramUserId, username);
+    }
 }
