@@ -34,16 +34,19 @@ public class TelegramService {
     private final TelegramLinkCodeRepository telegramLinkCodeRepository;
     private final TelegramConnectionRepository telegramConnectionRepository;
     private final UserRepository userRepository;
+    private final TelegramMessageService telegramMessageService;
     private final SecureRandom secureRandom = new SecureRandom();
 
     public TelegramService(
             TelegramLinkCodeRepository telegramLinkCodeRepository,
             TelegramConnectionRepository telegramConnectionRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            TelegramMessageService telegramMessageService
     ) {
         this.telegramLinkCodeRepository = telegramLinkCodeRepository;
         this.telegramConnectionRepository = telegramConnectionRepository;
         this.userRepository = userRepository;
+        this.telegramMessageService = telegramMessageService;
     }
 
     public TelegramLinkResponseDto createLink() {
@@ -119,6 +122,14 @@ public class TelegramService {
 
         linkCode.setUsed(true);
         telegramLinkCodeRepository.save(linkCode);
+        try {
+            telegramMessageService.sendMessage(
+                    telegramChatId,
+                    "Telegram connected to TaskFlow.\nYou will now receive task reminders here."
+            );
+        } catch (Exception e) {
+            System.out.println("Failed to send Telegram connection confirmation: " + e.getMessage());
+        }
     }
 
     private User getCurrentUser() {
