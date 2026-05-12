@@ -1,7 +1,9 @@
 package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TelegramUpdateDto {
 
     @JsonProperty("update_id")
@@ -25,6 +27,7 @@ public class TelegramUpdateDto {
         this.message = message;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Message {
 
         @JsonProperty("message_id")
@@ -69,6 +72,7 @@ public class TelegramUpdateDto {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Chat {
         private Long id;
 
@@ -81,6 +85,7 @@ public class TelegramUpdateDto {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class From {
         private Long id;
         private String username;
