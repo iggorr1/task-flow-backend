@@ -15,12 +15,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
 
 @Service
 public class TelegramService {
+
+    private static final Logger log = LoggerFactory.getLogger(TelegramService.class);
 
     @Value("${telegram.bot.username}")
     private String botUsername;
@@ -128,7 +132,7 @@ public class TelegramService {
                     "Telegram connected to TaskFlow.\nYou will now receive task reminders here."
             );
         } catch (Exception e) {
-            System.out.println("Failed to send Telegram connection confirmation: " + e.getMessage());
+            log.warn("Failed to send Telegram connection confirmation", e);
         }
     }
 
@@ -149,46 +153,33 @@ public class TelegramService {
     }
 
     public void handleWebhookUpdate(TelegramUpdateDto update) {
-        System.out.println("handleWebhookUpdate called");
-
         if (update == null) {
-            System.out.println("Telegram update is null");
             return;
         }
 
         if (update.getMessage() == null) {
-            System.out.println("Telegram message is null");
             return;
         }
 
         String text = update.getMessage().getText();
-        System.out.println("Telegram message text: " + text);
 
         if (text == null) {
-            System.out.println("Telegram message text is null");
             return;
         }
 
         if (!text.startsWith("/start ")) {
-            System.out.println("Telegram message is not link start command");
             return;
         }
 
         String token = text.substring("/start ".length()).trim();
-        System.out.println("Telegram link token from message: " + token);
 
         if (token.isBlank()) {
-            System.out.println("Telegram link token is blank");
             return;
         }
 
         Long chatId = update.getMessage().getChat().getId();
         Long telegramUserId = update.getMessage().getFrom().getId();
         String username = update.getMessage().getFrom().getUsername();
-
-        System.out.println("Telegram chat id: " + chatId);
-        System.out.println("Telegram user id: " + telegramUserId);
-        System.out.println("Telegram username: " + username);
 
         connectTelegramByToken(token, chatId, telegramUserId, username);
     }
