@@ -149,19 +149,36 @@ public class TelegramService {
     }
 
     public void handleWebhookUpdate(TelegramUpdateDto update) {
-        if (update == null || update.getMessage() == null) {
+        System.out.println("handleWebhookUpdate called");
+
+        if (update == null) {
+            System.out.println("Telegram update is null");
+            return;
+        }
+
+        if (update.getMessage() == null) {
+            System.out.println("Telegram message is null");
             return;
         }
 
         String text = update.getMessage().getText();
+        System.out.println("Telegram message text: " + text);
 
-        if (text == null || !text.startsWith("/start ")) {
+        if (text == null) {
+            System.out.println("Telegram message text is null");
+            return;
+        }
+
+        if (!text.startsWith("/start ")) {
+            System.out.println("Telegram message is not link start command");
             return;
         }
 
         String token = text.substring("/start ".length()).trim();
+        System.out.println("Telegram link token from message: " + token);
 
         if (token.isBlank()) {
+            System.out.println("Telegram link token is blank");
             return;
         }
 
@@ -169,9 +186,12 @@ public class TelegramService {
         Long telegramUserId = update.getMessage().getFrom().getId();
         String username = update.getMessage().getFrom().getUsername();
 
+        System.out.println("Telegram chat id: " + chatId);
+        System.out.println("Telegram user id: " + telegramUserId);
+        System.out.println("Telegram username: " + username);
+
         connectTelegramByToken(token, chatId, telegramUserId, username);
     }
-
 
 
     public boolean isValidWebhookSecret(String secretHeader) {
