@@ -7,6 +7,8 @@ import com.example.demo.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Date;
+import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Page<Task> findByUser(User user, Pageable pageable);
@@ -34,4 +36,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             String title,
             Pageable pageable
     );
+
+    List<Task> findByReminderAtBeforeAndReminderSentFalse(Date now);
+
 }

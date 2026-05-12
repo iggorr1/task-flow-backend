@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.demo.dto.TelegramUpdateDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.security.SecureRandom;
@@ -79,6 +80,7 @@ public class TelegramService {
                 .orElse(new TelegramStatusResponseDto(false, null, null));
     }
 
+    @Transactional
     public void disconnect() {
         User user = getCurrentUser();
         telegramConnectionRepository.deleteByUser(user);
