@@ -21,6 +21,10 @@ public class TelegramWebhookController {
             @RequestHeader(value = "X-Telegram-Bot-Api-Secret-Token", required = false) String secretHeader,
             @RequestBody TelegramUpdateDto update
     ) {
+        System.out.println("Telegram webhook received");
+        System.out.println("Telegram secret header: " + secretHeader);
+        System.out.println("Telegram update body: " + update);
+
         if (!telegramService.isValidWebhookSecret(secretHeader)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid Telegram webhook secret");
         }
