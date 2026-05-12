@@ -1,16 +1,20 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TelegramUpdateDto {
 
-    private Long update_id;
+    @JsonProperty("update_id")
+    private Long updateId;
+
     private Message message;
 
-    public Long getUpdate_id() {
-        return update_id;
+    public Long getUpdateId() {
+        return updateId;
     }
 
-    public void setUpdate_id(Long update_id) {
-        this.update_id = update_id;
+    public void setUpdateId(Long updateId) {
+        this.updateId = updateId;
     }
 
     public Message getMessage() {
@@ -22,17 +26,22 @@ public class TelegramUpdateDto {
     }
 
     public static class Message {
-        private Long message_id;
+
+        @JsonProperty("message_id")
+        private Long messageId;
+
         private Chat chat;
+
         private From from;
+
         private String text;
 
-        public Long getMessage_id() {
-            return message_id;
+        public Long getMessageId() {
+            return messageId;
         }
 
-        public void setMessage_id(Long message_id) {
-            this.message_id = message_id;
+        public void setMessageId(Long messageId) {
+            this.messageId = messageId;
         }
 
         public Chat getChat() {
