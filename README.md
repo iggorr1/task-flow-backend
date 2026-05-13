@@ -1,112 +1,151 @@
-# Task Flow — Backend API
+# TaskFlow — Backend API
 
-Backend REST API for a personal task management application.
+Backend REST API for **TaskFlow**, a full-stack task management application with JWT authentication, PostgreSQL persistence, task workflow statuses, pinned tasks, and Telegram reminders.
 
-The API supports user registration, JWT authentication, task CRUD operations, task status management, filtering, sorting, pagination, and role-based access control.
+The backend is built as a practical Java/Spring Boot pet project with a real production deployment flow: Docker, PostgreSQL, public API domain, and Telegram webhook integration.
 
 ---
 
-## Live Demo
-
-Frontend:
+## Live Links
 
 ```text
-https://wwwho.lol
+Frontend:       https://wwwho.lol
+Backend API:    https://api.wwwho.lol
+Telegram hook:  https://telegram.wwwho.lol/telegram/webhook
 ```
 
-Production API:
+Swagger / OpenAPI, when enabled in the running backend:
 
 ```text
-https://api.wwwho.lol
-```
-
-Frontend repository:
-
-```text
-https://github.com/iggorr1/task-manager-frontend
+https://api.wwwho.lol/swagger-ui/index.html
 ```
 
 ---
 
 ## Tech Stack
 
-- Java
+- Java 17
 - Spring Boot
+- Spring Web
 - Spring Security
-- JWT
-- PostgreSQL
+- JWT authentication
+- BCrypt password hashing
 - Spring Data JPA / Hibernate
+- PostgreSQL
+- Bean Validation
 - Maven
-- Docker
-- Docker Compose
+- Docker / Docker Compose
+- Telegram Bot API
+- Cloudflare Tunnel
 - Swagger / OpenAPI
 
 ---
 
-## Features
+## Main Features
+
+### Authentication
 
 - User registration
 - User login
-- JWT authentication
+- JWT token generation
 - Password hashing with BCrypt
+- Protected routes with `Authorization: Bearer <token>`
+- Role-based admin route example
+
+### Task Management
+
 - Create tasks
 - Get current user's tasks
-- Get task by id
-- Update tasks
+- Get task by ID
+- Update task title/description
 - Delete tasks
-- Pin and unpin important tasks
-- Mark task as completed
-- Task status management:
-    - `TODO`
-    - `IN_PROGRESS`
-    - `DONE`
-- Task input validation:
-    - title is required
-    - title max length is 120 characters
-    - description max length is 255 characters
-- Pagination
-- Sorting
-- Filtering by:
-    - completed
-    - title
-    - status
-- Global exception handling
-- Role-based access control:
-    - `USER`
-    - `ADMIN`
-- Dockerized backend
-- PostgreSQL database
-- Production deployment through Docker Compose and Cloudflare Tunnel
+- Pin/unpin important tasks
+- Task statuses:
+  - `TODO`
+  - `IN_PROGRESS`
+  - `DONE`
+- `completed` field is synchronized with task status
+- Task ownership checks: users can access only their own tasks
+- Pagination, filtering, search, and sorting
+
+### Telegram Reminders
+
+- Generate one-time Telegram connection links
+- Connect a user's Telegram chat through `/start <token>`
+- Validate Telegram webhook secret header
+- Store Telegram connection per user
+- Schedule task reminders with `reminderAt`
+- Background scheduler checks due reminders every minute
+- Send reminder messages through Telegram
+- Track `reminderSent` to avoid duplicate messages
 
 ---
 
-## API Endpoints
+## Project Structure
+
+```text
+src/main/java/com/example/demo
+├── config          # Security, OpenAPI configuration
+├── controller      # REST controllers
+├── dto             # Request/response DTOs
+├── entity          # JPA entities
+├── exception       # Custom exceptions and global handler
+├── repository      # Spring Data repositories
+├── security        # JWT filter, JWT service, UserDetailsService
+└── service         # Business logic, Telegram integration, scheduler
+```
+
+Important classes:
+
+```text
+SecurityConfig.java              # Security rules and CORS
+JwtAuthenticationFilter.java     # Reads Bearer tokens
+JwtService.java                  # Generates and validates JWT
+TaskService.java                 # Task business logic
+TelegramService.java             # Telegram linking flow
+TelegramWebhookController.java   # Telegram webhook endpoint
+TaskReminderScheduler.java       # Sends due reminders
+```
+
+---
+
+## API Overview
 
 ### Auth
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/users/register` | Register new user |
-| POST | `/users/login` | Login and receive JWT token |
+| Method | Endpoint | Auth | Description |
+|---|---|---:|---|
+| `POST` | `/users/register` | No | Register a new user |
+| `POST` | `/users/login` | No | Login and receive JWT token |
 
 ### Tasks
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/tasks` | Create task |
-| GET | `/tasks` | Get current user's tasks |
-| GET | `/tasks/{id}` | Get task by id |
-| PUT | `/tasks/{id}` | Update task |
-| DELETE | `/tasks/{id}` | Delete task |
-| PATCH | `/tasks/{id}/complete` | Mark task as completed |
-| PATCH | `/tasks/{id}/status` | Update task status |
-| PATCH | `/tasks/{id}/pin` | Pin or unpin task |
+| Method | Endpoint | Auth | Description |
+|---|---|---:|---|
+| `GET` | `/tasks` | Yes | Get current user's tasks |
+| `GET` | `/tasks/{id}` | Yes | Get one task by ID |
+| `POST` | `/tasks` | Yes | Create a task |
+| `PUT` | `/tasks/{id}` | Yes | Update task title/description |
+| `DELETE` | `/tasks/{id}` | Yes | Delete task |
+| `PATCH` | `/tasks/{id}/complete` | Yes | Mark task as done |
+| `PATCH` | `/tasks/{id}/status` | Yes | Update task status |
+| `PATCH` | `/tasks/{id}/pin` | Yes | Toggle pinned state |
+| `PATCH` | `/tasks/{id}/reminder` | Yes | Set reminder date/time |
+
+### Telegram
+
+| Method | Endpoint | Auth | Description |
+|---|---|---:|---|
+| `POST` | `/telegram/link` | Yes | Create Telegram connection link |
+| `GET` | `/telegram/status` | Yes | Get current Telegram connection status |
+| `DELETE` | `/telegram/disconnect` | Yes | Disconnect Telegram account |
+| `POST` | `/telegram/webhook` | Secret header | Receive Telegram updates |
 
 ### Admin
 
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/admin/test` | Test admin-only access |
+| Method | Endpoint | Auth | Description |
+|---|---|---:|---|
+| `GET` | `/admin/test` | Admin | Test admin-only access |
 
 ---
 
@@ -117,62 +156,20 @@ https://github.com/iggorr1/task-manager-frontend
 | `page` | `page=0` | Page number |
 | `size` | `size=10` | Page size |
 | `sort` | `sort=createdAt,desc` | Sort field and direction |
-| `completed` | `completed=true` | Filter by completion status |
-| `title` | `title=test` | Filter by title contains, ignore case |
-| `status` | `status=IN_PROGRESS` | Filter by task status |
+| `completed` | `completed=false` | Filter by completion state |
+| `title` | `title=meeting` | Search by title, case-insensitive |
+| `status` | `status=TODO` | Filter by task status |
 
 Example:
 
 ```http
-GET /tasks?page=0&size=10&status=IN_PROGRESS&title=test&sort=createdAt,desc
+GET /tasks?page=0&size=10&status=TODO&sort=createdAt,desc
 Authorization: Bearer <token>
 ```
 
 ---
 
-## Task Status
-
-Each task has a status:
-
-```text
-TODO
-IN_PROGRESS
-DONE
-```
-
-New tasks are created with status:
-
-```text
-TODO
-```
-
-When task status is changed to `DONE`, the `completed` field becomes `true`.
-
-When task status is changed to `TODO` or `IN_PROGRESS`, the `completed` field becomes `false`.
-
----
-
-## Authentication
-
-Most task endpoints require JWT authentication.
-
-After login, copy the token from the response and send it in the `Authorization` header:
-
-```text
-Authorization: Bearer <token>
-```
-
-Login response example:
-
-```json
-{
-  "token": "jwt-token"
-}
-```
-
----
-
-## Example Requests
+## Request Examples
 
 ### Register
 
@@ -204,7 +201,15 @@ Content-Type: application/json
 }
 ```
 
-### Create task
+Response:
+
+```json
+{
+  "token": "jwt-token"
+}
+```
+
+### Create Task
 
 ```http
 POST /tasks
@@ -215,47 +220,11 @@ Content-Type: application/json
 ```json
 {
   "title": "Learn Spring Boot",
-  "description": "Practice REST API"
+  "description": "Practice REST API and JWT auth"
 }
 ```
 
-### Get tasks
-
-```http
-GET /tasks?page=0&size=10&status=IN_PROGRESS&title=test&sort=createdAt,desc
-Authorization: Bearer <token>
-```
-
-### Get task by id
-
-```http
-GET /tasks/1
-Authorization: Bearer <token>
-```
-
-### Update task
-
-```http
-PUT /tasks/1
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-```json
-{
-  "title": "Updated title",
-  "description": "Updated description"
-}
-```
-
-### Mark task as completed
-
-```http
-PATCH /tasks/1/complete
-Authorization: Bearer <token>
-```
-
-### Update task status
+### Update Task Status
 
 ```http
 PATCH /tasks/1/status
@@ -269,199 +238,166 @@ Content-Type: application/json
 }
 ```
 
-### Pin / unpin task
+### Set Task Reminder
 
 ```http
-PATCH /tasks/1/pin
+PATCH /tasks/1/reminder
 Authorization: Bearer <token>
+Content-Type: application/json
 ```
-
-This endpoint toggles the task `pinned` state.
-
-Pinned tasks can be displayed first on the frontend.
-
-### Delete task
-
-```http
-DELETE /tasks/1
-Authorization: Bearer <token>
-```
-
-### Admin-only endpoint
-
-```http
-GET /admin/test
-Authorization: Bearer <admin_token>
-```
-
----
-
-## Error Response Format
-
-Basic error response:
 
 ```json
 {
-  "status": 404,
-  "message": "Task not found",
-  "timestamp": "2026-05-05T11:14:07.5835068"
+  "reminderAt": "2026-05-25T15:30:00.000Z"
 }
 ```
 
-Validation error response:
+### Create Telegram Link
+
+```http
+POST /telegram/link
+Authorization: Bearer <token>
+```
+
+Response:
 
 ```json
 {
-  "status": 400,
-  "message": "Validation failed",
-  "timestamp": "2026-05-05T11:14:07.5835068",
-  "errors": {
-    "login": "must not be blank",
-    "password": "must not be blank"
-  }
+  "link": "https://t.me/taskflow_reminders_ik_bot?start=<token>",
+  "expiresAt": "2026-05-25T15:40:00.000Z"
 }
-```
-
----
-
-## Swagger / OpenAPI
-
-Swagger UI:
-
-```text
-http://localhost:8080/swagger-ui/index.html
-```
-
-OpenAPI JSON:
-
-```text
-http://localhost:8080/v3/api-docs
 ```
 
 ---
 
 ## Environment Variables
 
-The application uses environment variables for database and JWT configuration.
-
-Example:
+Create `.env` or configure environment variables on the server:
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/demo
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/demo
 SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=your_password
+SPRING_DATASOURCE_PASSWORD=change-me
 
-JWT_SECRET=your_long_secret_key
+JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRATION=86400000
+
+TELEGRAM_BOT_USERNAME=your_bot_username
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_WEBHOOK_SECRET=replace-with-random-webhook-secret
 ```
 
-Do not commit real secrets to GitHub.
+Do not commit real secrets or real Telegram bot tokens to Git.
 
 ---
 
-## Running Locally
+## Local Development
 
-1. Clone the repository:
+### 1. Start PostgreSQL
+
+Using Docker Compose:
 
 ```bash
-git clone https://github.com/iggorr1/task-flow-backend.git
-cd task-flow-backend
+docker compose up -d postgres
 ```
 
-2. Configure environment variables or `application.properties`.
+### 2. Configure environment variables
 
-3. Start PostgreSQL.
+Example for local development:
 
-4. Run the application:
+```bash
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/demo
+export SPRING_DATASOURCE_USERNAME=postgres
+export SPRING_DATASOURCE_PASSWORD=change-me
+export JWT_SECRET=replace-with-a-long-random-secret
+export JWT_EXPIRATION=86400000
+export TELEGRAM_BOT_USERNAME=your_bot_username
+export TELEGRAM_BOT_TOKEN=your_bot_token
+export TELEGRAM_WEBHOOK_SECRET=local-dev-secret
+```
+
+### 3. Run backend
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-On Windows:
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-5. Open Swagger UI:
+Default local API URL:
 
 ```text
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8080
+```
+
+---
+
+## Build
+
+```bash
+./mvnw clean package
+```
+
+Run the generated jar:
+
+```bash
+java -jar target/demo-0.0.1-SNAPSHOT.jar
 ```
 
 ---
 
 ## Docker
 
-Build backend image:
+Build image:
 
 ```bash
 docker build -t task-flow-backend .
 ```
 
-Run backend container:
+Run container example:
 
 ```bash
-docker run -p 8080:8080 task-flow-backend
-```
-
-In production, the backend runs through Docker Compose together with:
-
-- PostgreSQL
-- Frontend
-- Cloudflare Tunnel
-
----
-
-## Tests
-
-The project includes integration tests for the main task flow:
-
-- Register user
-- Login and receive JWT
-- Create task
-- Update task status
-- Filter tasks by status
-
-Run tests:
-
-```bash
-./mvnw test
-```
-
-On Windows:
-
-```powershell
-.\mvnw.cmd test
+docker run -p 8080:8080 --env-file .env task-flow-backend
 ```
 
 ---
 
-## Deployment
+## Production Deployment Notes
 
-The production version runs on an Ubuntu Server using Docker Compose.
-
-Deployment flow:
+The deployed setup uses:
 
 ```text
-GitHub
-↓
-git pull on server
-↓
-Docker Compose rebuild
-↓
-Cloudflare Tunnel
-↓
-api.wwwho.lol
+GitHub → Ubuntu Server → Docker Compose → Cloudflare Tunnel → public domains
 ```
 
-Server deploy command:
+Important production routes:
+
+```text
+wwwho.lol           -> frontend container
+api.wwwho.lol       -> backend container
+telegram.wwwho.lol  -> backend webhook endpoint
+```
+
+Telegram webhook URL:
+
+```text
+https://telegram.wwwho.lol/telegram/webhook
+```
+
+Set webhook example:
 
 ```bash
-cd ~/apps/task-flow
-./deploy.sh
+curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook?url=https://telegram.wwwho.lol/telegram/webhook&secret_token=$TELEGRAM_WEBHOOK_SECRET&drop_pending_updates=true"
 ```
+
+---
+
+## Security Notes
+
+- Passwords are stored as BCrypt hashes.
+- JWT is required for all user task and Telegram account endpoints.
+- `/telegram/webhook` is public but protected by Telegram's secret token header.
+- Users can only access their own tasks.
+- Admin endpoints require `ADMIN` role.
+- Real `.env` files, JWT secrets, database passwords, and bot tokens should never be committed.
 
 ---
 
@@ -469,27 +405,20 @@ cd ~/apps/task-flow
 
 Implemented:
 
-- Authentication
-- JWT security
-- Password hashing with BCrypt
+- JWT auth
 - Task CRUD
-- Task status workflow
-- Task pinning
-- Filtering / sorting / pagination
-- Title search
-- Request validation for task title and description
-- Global exception handling
+- Task statuses
+- Search/filter/sort/pagination
+- Pinned tasks
+- Telegram connection flow
+- Telegram reminders
+- Dockerized backend
 - PostgreSQL persistence
-- Docker deployment
-- Production API domain
-- Frontend integration
-- Swagger / OpenAPI documentation
+- Production deployment through Cloudflare Tunnel
 
-Planned improvements:
+Planned / possible improvements:
 
-- Telegram task reminders
-- `/users/me` endpoint
-- Task priority
-- Due dates
-- More tests
-- More detailed production deployment notes
+- Remove reminder endpoint: `DELETE /tasks/{id}/reminder`
+- Better structured logging for scheduler and Telegram flow
+- Integration tests for auth, task ownership, and reminders
+- DTO cleanup and package naming cleanup before final portfolio polish
