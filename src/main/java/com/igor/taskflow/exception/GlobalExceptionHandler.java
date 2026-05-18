@@ -13,7 +13,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleTaskNotFound(TaskNotFoundException ex) {
+    public ResponseEntity<ErrorResponseDto> handleTaskNotFound() {
 
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.NOT_FOUND.value(),
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(TaskAccessDeniedException.class)
-    public ResponseEntity<ErrorResponseDto> handleTaskAccessDenied(TaskAccessDeniedException ex) {
+    public ResponseEntity<ErrorResponseDto> handleTaskAccessDenied() {
 
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.FORBIDDEN.value(),
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponseDto> handleBadRequest(BadRequestException ex) {
+    public ResponseEntity<ErrorResponseDto> handleBadRequest() {
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),
                 "Bad request",
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(LoginAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDto> handleLoginAlreadyExists(LoginAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponseDto> handleLoginAlreadyExists() {
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),
                 "Login already exists",
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExists(EmailAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponseDto> handleEmailAlreadyExists() {
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),
                 "Email already exists",
@@ -69,9 +69,8 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
-        });
+        ex.getBindingResult().getFieldErrors()
+                .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
 
         ErrorResponseDto error = new ErrorResponseDto(
                 HttpStatus.BAD_REQUEST.value(),

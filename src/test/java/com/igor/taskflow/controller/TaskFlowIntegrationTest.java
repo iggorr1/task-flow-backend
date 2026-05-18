@@ -1,4 +1,4 @@
-package com.igor.taskflow.conroller;
+package com.igor.taskflow.controller;
 
 import com.igor.taskflow.TaskFlowApplication;
 import com.fasterxml.jackson.databind.JsonNode;

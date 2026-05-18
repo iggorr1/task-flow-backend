@@ -84,15 +84,15 @@ https://api.wwwho.lol/swagger-ui/index.html
 ## Project Structure
 
 ```text
-src/main/java/com/example/demo
-├── config          # Security, OpenAPI configuration
-├── controller      # REST controllers
-├── dto             # Request/response DTOs
-├── entity          # JPA entities
-├── exception       # Custom exceptions and global handler
-├── repository      # Spring Data repositories
-├── security        # JWT filter, JWT service, UserDetailsService
-└── service         # Business logic, Telegram integration, scheduler
+src/main/java/com/igor/taskflow
+|-- config          # Security, OpenAPI configuration
+|-- controller      # REST controllers
+|-- dto             # Request/response DTOs
+|-- entity          # JPA entities
+|-- exception       # Custom exceptions and global handler
+|-- repository      # Spring Data repositories
+|-- security        # JWT filter, JWT service, UserDetailsService
+`-- service         # Business logic, Telegram integration, scheduler
 ```
 
 Important classes:
@@ -275,9 +275,9 @@ Response:
 Create `.env` or configure environment variables on the server:
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/demo
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=change-me
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflow
+SPRING_DATASOURCE_USERNAME=taskflow_user
+SPRING_DATASOURCE_PASSWORD=change_me
 
 JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRATION=86400000
@@ -306,9 +306,9 @@ docker compose up -d postgres
 Example for local development:
 
 ```bash
-export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/demo
-export SPRING_DATASOURCE_USERNAME=postgres
-export SPRING_DATASOURCE_PASSWORD=change-me
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflow
+export SPRING_DATASOURCE_USERNAME=taskflow_user
+export SPRING_DATASOURCE_PASSWORD=change_me
 export JWT_SECRET=replace-with-a-long-random-secret
 export JWT_EXPIRATION=86400000
 export TELEGRAM_BOT_USERNAME=your_bot_username
@@ -339,7 +339,7 @@ http://localhost:8080
 Run the generated jar:
 
 ```bash
-java -jar target/demo-0.0.1-SNAPSHOT.jar
+java -jar target/task-flow-backend-0.0.1-SNAPSHOT.jar
 ```
 
 ---
