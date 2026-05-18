@@ -12,11 +12,11 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>com.igor</groupId>
+	<artifactId>task-flow-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo Spring Boot project</description>
+	<name>TaskFlow Backend</name>
+	<description>Backend API for the TaskFlow task management application</description>
 
 	<properties>
 		<java.version>17</java.version>
