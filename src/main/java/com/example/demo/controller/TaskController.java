@@ -80,4 +80,9 @@ public class TaskController {
         return taskService.updateTaskReminder(id, requestDto.getReminderAt());
     }
 
+    @DeleteMapping("/{id}/reminder")
+    public TaskResponseDto deleteTaskReminder(@PathVariable Long id) {
+        return taskService.deleteTaskReminder(id);
+    }
+
 }

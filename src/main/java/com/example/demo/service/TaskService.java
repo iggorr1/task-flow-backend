@@ -251,16 +251,20 @@ public class TaskService {
     }
 
     public TaskResponseDto updateTaskReminder(Long taskId, Date reminderAt) {
-        User currentUser = getCurrentUser();
-
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(TaskNotFoundException::new);
-
-        if (!task.getUser().getId().equals(currentUser.getId())) {
-            throw new TaskAccessDeniedException();
-        }
+        Task task = getMyTaskById(taskId);
 
         task.setReminderAt(reminderAt);
+        task.setReminderSent(false);
+
+        Task savedTask = taskRepository.save(task);
+
+        return toDto(savedTask);
+    }
+
+    public TaskResponseDto deleteTaskReminder(Long taskId) {
+        Task task = getMyTaskById(taskId);
+
+        task.setReminderAt(null);
         task.setReminderSent(false);
 
         Task savedTask = taskRepository.save(task);
