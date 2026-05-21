@@ -1,26 +1,22 @@
-# TaskFlow — Backend API
+# TaskFlow - Backend API
 
-Backend REST API for **TaskFlow**, a full-stack task management application with JWT authentication, PostgreSQL persistence, task workflow statuses, pinned tasks, and Telegram reminders.
+Backend API for **TaskFlow**, a full-stack task manager built with Java and Spring Boot.
 
-The backend is built as a practical Java/Spring Boot pet project with a real production deployment flow: Docker, PostgreSQL, public API domain, and Telegram webhook integration.
+The project includes JWT authentication, Google OAuth2 login, PostgreSQL persistence, Flyway migrations, role-based admin endpoints, Telegram reminders, Docker deployment, and a public production setup behind Cloudflare Tunnel.
 
----
-
-## Live Links
+## Live Project
 
 ```text
-Frontend:       https://wwwho.lol
-Backend API:    https://api.wwwho.lol
-Telegram hook:  https://telegram.wwwho.lol/telegram/webhook
+Frontend:      https://wwwho.lol
+Backend API:   https://api.wwwho.lol
+Telegram hook: https://telegram.wwwho.lol/telegram/webhook
 ```
 
-Swagger / OpenAPI, when enabled in the running backend:
+Swagger / OpenAPI, when enabled:
 
 ```text
 https://api.wwwho.lol/swagger-ui/index.html
 ```
-
----
 
 ## Tech Stack
 
@@ -28,10 +24,11 @@ https://api.wwwho.lol/swagger-ui/index.html
 - Spring Boot
 - Spring Web
 - Spring Security
-- JWT authentication
-- BCrypt password hashing
+- JWT
+- OAuth2 Client with Google
 - Spring Data JPA / Hibernate
 - PostgreSQL
+- Flyway database migrations
 - Bean Validation
 - Maven
 - Docker / Docker Compose
@@ -39,76 +36,68 @@ https://api.wwwho.lol/swagger-ui/index.html
 - Cloudflare Tunnel
 - Swagger / OpenAPI
 
----
-
-## Main Features
+## Features
 
 ### Authentication
 
-- User registration
-- User login
-- Google OAuth2 login
+- Register and login with local username/password
+- Login with Google OAuth2
 - JWT token generation
-- Password hashing with BCrypt
-- Protected routes with `Authorization: Bearer <token>`
-- Role-based admin route example
+- BCrypt password hashing
+- Protected API routes with `Authorization: Bearer <token>`
+- Role-based admin access
 
 ### Task Management
 
-- Create tasks
-- Get current user's tasks
-- Get task by ID
-- Update task title/description
-- Delete tasks
-- Pin/unpin important tasks
-- Task statuses:
-  - `TODO`
-  - `IN_PROGRESS`
-  - `DONE`
-- `completed` field is synchronized with task status
+- Create, read, update, and delete tasks
 - Task ownership checks: users can access only their own tasks
-- Pagination, filtering, search, and sorting
+- Task statuses: `TODO`, `IN_PROGRESS`, `DONE`
+- Pin/unpin important tasks
+- Pagination, search, filtering, and sorting
+- Reminder date/time for tasks
 
 ### Telegram Reminders
 
-- Generate one-time Telegram connection links
-- Connect a user's Telegram chat through `/start <token>`
+- Generate Telegram connection links
+- Connect Telegram chat through `/start <token>`
 - Validate Telegram webhook secret header
-- Store Telegram connection per user
-- Schedule task reminders with `reminderAt`
-- Background scheduler checks due reminders every minute
-- Send reminder messages through Telegram
-- Track `reminderSent` to avoid duplicate messages
+- Store one Telegram connection per user
+- Send due task reminders from a scheduled backend job
+- Avoid duplicate reminder messages with `reminderSent`
 
----
+### Admin
+
+- Admin-only access check
+- Read-only admin statistics
+- Read-only admin users/tasks overview
 
 ## Project Structure
 
 ```text
 src/main/java/com/igor/taskflow
-|-- config          # Security, OpenAPI configuration
+|-- config          # Security and OpenAPI configuration
 |-- controller      # REST controllers
 |-- dto             # Request/response DTOs
 |-- entity          # JPA entities
 |-- exception       # Custom exceptions and global handler
 |-- repository      # Spring Data repositories
-|-- security        # JWT filter, JWT service, UserDetailsService
-`-- service         # Business logic, Telegram integration, scheduler
+|-- security        # JWT and OAuth-related security classes
+`-- service         # Business logic, Telegram integration, schedulers
 ```
 
 Important classes:
 
 ```text
-SecurityConfig.java              # Security rules and CORS
-JwtAuthenticationFilter.java     # Reads Bearer tokens
-JwtService.java                  # Generates and validates JWT
-TaskService.java                 # Task business logic
-TelegramService.java             # Telegram linking flow
-TelegramWebhookController.java   # Telegram webhook endpoint
-TaskReminderScheduler.java       # Sends due reminders
+TaskFlowApplication.java              # Spring Boot entry point
+SecurityConfig.java                   # Security, JWT, OAuth2, CORS
+JwtAuthenticationFilter.java          # Reads Bearer tokens
+JwtService.java                       # Generates and validates JWT
+OAuth2UserService.java                # Maps Google users to local users
+OAuth2AuthenticationSuccessHandler.java # Issues JWT after Google login
+TaskService.java                      # Task business logic
+TelegramService.java                  # Telegram linking flow
+TaskReminderScheduler.java            # Sends due reminders
 ```
-
----
 
 ## API Overview
 
@@ -117,7 +106,9 @@ TaskReminderScheduler.java       # Sends due reminders
 | Method | Endpoint | Auth | Description |
 |---|---|---:|---|
 | `POST` | `/users/register` | No | Register a new user |
-| `POST` | `/users/login` | No | Login and receive JWT token |
+| `POST` | `/users/login` | No | Login and receive JWT |
+| `GET` | `/oauth2/authorization/google` | No | Start Google OAuth2 login |
+| `GET` | `/login/oauth2/code/google` | No | Google OAuth2 callback |
 
 ### Tasks
 
@@ -125,158 +116,58 @@ TaskReminderScheduler.java       # Sends due reminders
 |---|---|---:|---|
 | `GET` | `/tasks` | Yes | Get current user's tasks |
 | `GET` | `/tasks/{id}` | Yes | Get one task by ID |
-| `POST` | `/tasks` | Yes | Create a task |
-| `PUT` | `/tasks/{id}` | Yes | Update task title/description |
+| `POST` | `/tasks` | Yes | Create task |
+| `PUT` | `/tasks/{id}` | Yes | Update task |
 | `DELETE` | `/tasks/{id}` | Yes | Delete task |
 | `PATCH` | `/tasks/{id}/complete` | Yes | Mark task as done |
 | `PATCH` | `/tasks/{id}/status` | Yes | Update task status |
 | `PATCH` | `/tasks/{id}/pin` | Yes | Toggle pinned state |
 | `PATCH` | `/tasks/{id}/reminder` | Yes | Set reminder date/time |
+| `DELETE` | `/tasks/{id}/reminder` | Yes | Remove reminder |
 
 ### Telegram
 
 | Method | Endpoint | Auth | Description |
 |---|---|---:|---|
 | `POST` | `/telegram/link` | Yes | Create Telegram connection link |
-| `GET` | `/telegram/status` | Yes | Get current Telegram connection status |
-| `DELETE` | `/telegram/disconnect` | Yes | Disconnect Telegram account |
+| `GET` | `/telegram/status` | Yes | Get Telegram connection status |
+| `DELETE` | `/telegram/disconnect` | Yes | Disconnect Telegram |
 | `POST` | `/telegram/webhook` | Secret header | Receive Telegram updates |
 
 ### Admin
 
 | Method | Endpoint | Auth | Description |
 |---|---|---:|---|
-| `GET` | `/admin/test` | Admin | Test admin-only access |
+| `GET` | `/admin/test` | Admin | Check admin access |
+| `GET` | `/admin/stats` | Admin | Get application statistics |
+| `GET` | `/admin/users` | Admin | Get users overview |
+| `GET` | `/admin/tasks` | Admin | Get tasks overview |
 
----
+## Database
 
-## Query Parameters for `GET /tasks`
+The schema is managed by Flyway migrations.
 
-| Parameter | Example | Description |
-|---|---|---|
-| `page` | `page=0` | Page number |
-| `size` | `size=10` | Page size |
-| `sort` | `sort=createdAt,desc` | Sort field and direction |
-| `completed` | `completed=false` | Filter by completion state |
-| `title` | `title=meeting` | Search by title, case-insensitive |
-| `status` | `status=TODO` | Filter by task status |
+Current migrations:
 
-Example:
-
-```http
-GET /tasks?page=0&size=10&status=TODO&sort=createdAt,desc
-Authorization: Bearer <token>
+```text
+V1__init_schema.sql
+V2__add_oauth_provider_to_users.sql
 ```
 
----
+Hibernate is used as the ORM layer, but schema changes are versioned by Flyway:
 
-## Request Examples
-
-### Register
-
-```http
-POST /users/register
-Content-Type: application/json
+```properties
+spring.jpa.hibernate.ddl-auto=validate
 ```
 
-```json
-{
-  "name": "Igor",
-  "email": "igor@example.com",
-  "login": "igor",
-  "password": "password123"
-}
-```
-
-### Login
-
-```http
-POST /users/login
-Content-Type: application/json
-```
-
-```json
-{
-  "login": "igor",
-  "password": "password123"
-}
-```
-
-Response:
-
-```json
-{
-  "token": "jwt-token"
-}
-```
-
-### Create Task
-
-```http
-POST /tasks
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-```json
-{
-  "title": "Learn Spring Boot",
-  "description": "Practice REST API and JWT auth"
-}
-```
-
-### Update Task Status
-
-```http
-PATCH /tasks/1/status
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-```json
-{
-  "status": "IN_PROGRESS"
-}
-```
-
-### Set Task Reminder
-
-```http
-PATCH /tasks/1/reminder
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-```json
-{
-  "reminderAt": "2026-05-25T15:30:00.000Z"
-}
-```
-
-### Create Telegram Link
-
-```http
-POST /telegram/link
-Authorization: Bearer <token>
-```
-
-Response:
-
-```json
-{
-  "link": "https://t.me/taskflow_reminders_ik_bot?start=<token>",
-  "expiresAt": "2026-05-25T15:40:00.000Z"
-}
-```
-
----
+This means Hibernate validates that entities match the database, while Flyway is responsible for creating and changing tables.
 
 ## Environment Variables
 
-Create `.env` or configure environment variables on the server:
+Use environment variables or a server `.env` file. Never commit real secrets.
 
 ```env
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflow
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/taskflow
 SPRING_DATASOURCE_USERNAME=taskflow_user
 SPRING_DATASOURCE_PASSWORD=change_me
 
@@ -292,74 +183,77 @@ TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_WEBHOOK_SECRET=replace-with-random-webhook-secret
 ```
 
-Do not commit real secrets or real Telegram bot tokens to Git.
+## Google OAuth2 Setup
 
----
+Google Cloud Console OAuth client type:
+
+```text
+Web application
+```
+
+Authorized JavaScript origins:
+
+```text
+https://wwwho.lol
+```
+
+Authorized redirect URIs:
+
+```text
+https://api.wwwho.lol/login/oauth2/code/google
+```
+
+If the application is behind Cloudflare Tunnel or another reverse proxy and Google shows `redirect_uri_mismatch`, check the exact `redirect_uri` in Google error details. If the backend generates `http://api.wwwho.lol/login/oauth2/code/google`, either add that URI in Google Console as a temporary workaround or configure forwarded headers in the production proxy/backend setup.
 
 ## Local Development
 
-### 1. Start PostgreSQL
-
-Using Docker Compose:
+Start PostgreSQL:
 
 ```bash
 docker compose up -d postgres
 ```
 
-### 2. Configure environment variables
-
-Example for local development:
-
-```bash
-export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/taskflow
-export SPRING_DATASOURCE_USERNAME=taskflow_user
-export SPRING_DATASOURCE_PASSWORD=change_me
-export JWT_SECRET=replace-with-a-long-random-secret
-export JWT_EXPIRATION=86400000
-export FRONTEND_URL=http://localhost:5173
-export GOOGLE_CLIENT_ID=replace-with-google-client-id
-export GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
-export TELEGRAM_BOT_USERNAME=your_bot_username
-export TELEGRAM_BOT_TOKEN=your_bot_token
-export TELEGRAM_WEBHOOK_SECRET=local-dev-secret
-```
-
-Google OAuth redirect URIs:
-
-```text
-Local:      http://localhost:8080/login/oauth2/code/google
-Production: https://api.wwwho.lol/login/oauth2/code/google
-```
-
-### 3. Run backend
+Run backend:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Default local API URL:
+Default local API:
 
 ```text
 http://localhost:8080
 ```
 
----
+Local Google OAuth redirect URI:
 
-## Build
+```text
+http://localhost:8080/login/oauth2/code/google
+```
+
+## Build and Test
+
+Run tests:
+
+```bash
+./mvnw test
+```
+
+Build jar:
 
 ```bash
 ./mvnw clean package
 ```
 
-Run the generated jar:
+Run jar:
 
 ```bash
 java -jar target/task-flow-backend-0.0.1-SNAPSHOT.jar
 ```
 
----
-
 ## Docker
+
+The Dockerfile uses a Maven build image and a lightweight Java runtime image.
 
 Build image:
 
@@ -373,22 +267,27 @@ Run container example:
 docker run -p 8080:8080 --env-file .env task-flow-backend
 ```
 
----
+## Production Deployment
 
-## Production Deployment Notes
-
-The deployed setup uses:
+Current production flow:
 
 ```text
-GitHub → Ubuntu Server → Docker Compose → Cloudflare Tunnel → public domains
+GitHub -> Ubuntu Server -> Docker Compose -> Cloudflare Tunnel -> public domains
+```
+
+Server deployment command:
+
+```bash
+cd ~/apps/task-flow
+./deploy.sh
 ```
 
 Important production routes:
 
 ```text
-wwwho.lol           -> frontend container
-api.wwwho.lol       -> backend container
-telegram.wwwho.lol  -> backend webhook endpoint
+wwwho.lol           -> frontend
+api.wwwho.lol       -> backend API
+telegram.wwwho.lol  -> Telegram webhook endpoint
 ```
 
 Telegram webhook URL:
@@ -397,43 +296,53 @@ Telegram webhook URL:
 https://telegram.wwwho.lol/telegram/webhook
 ```
 
-Set webhook example:
-
-```bash
-curl "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook?url=https://telegram.wwwho.lol/telegram/webhook&secret_token=$TELEGRAM_WEBHOOK_SECRET&drop_pending_updates=true"
-```
-
----
-
 ## Security Notes
 
 - Passwords are stored as BCrypt hashes.
-- JWT is required for all user task and Telegram account endpoints.
-- `/telegram/webhook` is public but protected by Telegram's secret token header.
+- JWT protects user task and Telegram endpoints.
 - Users can only access their own tasks.
 - Admin endpoints require `ADMIN` role.
-- Real `.env` files, JWT secrets, database passwords, and bot tokens should never be committed.
+- Telegram webhook is public but protected by a secret token header.
+- Real `.env` files, JWT secrets, database passwords, Google client secrets, and Telegram tokens must not be committed.
 
----
+## Tests
+
+The backend includes integration and service tests for:
+
+- Application context startup
+- Auth flow
+- Task ownership
+- Admin access
+- Google OAuth user mapping
+- Flyway migration compatibility with test database
+
+Run:
+
+```bash
+./mvnw test
+```
 
 ## Current Status
 
 Implemented:
 
-- JWT auth
+- Local JWT auth
+- Google OAuth2 login
 - Task CRUD
 - Task statuses
 - Search/filter/sort/pagination
 - Pinned tasks
 - Telegram connection flow
 - Telegram reminders
+- Admin read-only endpoints
+- Flyway migrations
 - Dockerized backend
 - PostgreSQL persistence
 - Production deployment through Cloudflare Tunnel
 
-Planned / possible improvements:
+Possible improvements:
 
-- Remove reminder endpoint: `DELETE /tasks/{id}/reminder`
-- Better structured logging for scheduler and Telegram flow
-- Integration tests for auth, task ownership, and reminders
-- DTO cleanup and package naming cleanup before final portfolio polish
+- Add structured JSON logging
+- Add refresh tokens
+- Add email verification
+- Add CI pipeline with tests and Docker build
