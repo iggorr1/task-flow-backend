@@ -47,6 +47,7 @@ https://api.wwwho.lol/swagger-ui/index.html
 
 - User registration
 - User login
+- Google OAuth2 login
 - JWT token generation
 - Password hashing with BCrypt
 - Protected routes with `Authorization: Bearer <token>`
@@ -282,6 +283,10 @@ SPRING_DATASOURCE_PASSWORD=change_me
 JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRATION=86400000
 
+FRONTEND_URL=https://wwwho.lol
+GOOGLE_CLIENT_ID=replace-with-google-client-id
+GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
+
 TELEGRAM_BOT_USERNAME=your_bot_username
 TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_WEBHOOK_SECRET=replace-with-random-webhook-secret
@@ -311,9 +316,19 @@ export SPRING_DATASOURCE_USERNAME=taskflow_user
 export SPRING_DATASOURCE_PASSWORD=change_me
 export JWT_SECRET=replace-with-a-long-random-secret
 export JWT_EXPIRATION=86400000
+export FRONTEND_URL=http://localhost:5173
+export GOOGLE_CLIENT_ID=replace-with-google-client-id
+export GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
 export TELEGRAM_BOT_USERNAME=your_bot_username
 export TELEGRAM_BOT_TOKEN=your_bot_token
 export TELEGRAM_WEBHOOK_SECRET=local-dev-secret
+```
+
+Google OAuth redirect URIs:
+
+```text
+Local:      http://localhost:8080/login/oauth2/code/google
+Production: https://api.wwwho.lol/login/oauth2/code/google
 ```
 
 ### 3. Run backend
