@@ -44,6 +44,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(CaptchaVerificationException.class)
+    public ResponseEntity<ErrorResponseDto> handleCaptchaVerification() {
+        ErrorResponseDto error = new ErrorResponseDto(
+                HttpStatus.BAD_REQUEST.value(),
+                "Captcha verification failed",
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(LoginAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleLoginAlreadyExists() {
         ErrorResponseDto error = new ErrorResponseDto(
