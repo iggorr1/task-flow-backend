@@ -233,6 +233,16 @@ VITE_TURNSTILE_SITE_KEY=replace-with-turnstile-site-key
 
 The site key is public and can be used in the browser. The secret key must stay only on the backend/server.
 
+Production `.env` example:
+
+```env
+TURNSTILE_ENABLED=true
+TURNSTILE_SECRET_KEY=your-cloudflare-turnstile-secret-key
+VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
+```
+
+`TURNSTILE_SECRET_KEY` is used only by the backend when it calls Cloudflare `siteverify`. `VITE_TURNSTILE_SITE_KEY` is public and is needed by the frontend build so the widget can render in the browser.
+
 ## Local Development
 
 Start PostgreSQL:
@@ -309,6 +319,16 @@ Server deployment command:
 cd ~/apps/task-flow
 ./deploy.sh
 ```
+
+Before deploying Turnstile, make sure the server `.env` contains:
+
+```env
+TURNSTILE_ENABLED=true
+TURNSTILE_SECRET_KEY=your-cloudflare-turnstile-secret-key
+VITE_TURNSTILE_SITE_KEY=your-cloudflare-turnstile-site-key
+```
+
+If the backend starts but the captcha widget is not visible on the frontend, check that `VITE_TURNSTILE_SITE_KEY` is passed into the frontend Docker build. Vite reads `VITE_*` variables during build time, not at browser runtime.
 
 Important production routes:
 
