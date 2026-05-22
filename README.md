@@ -26,6 +26,7 @@ https://api.wwwho.lol/swagger-ui/index.html
 - Spring Security
 - JWT
 - OAuth2 Client with Google
+- Cloudflare Turnstile
 - Spring Data JPA / Hibernate
 - PostgreSQL
 - Flyway database migrations
@@ -46,6 +47,7 @@ https://api.wwwho.lol/swagger-ui/index.html
 - BCrypt password hashing
 - Protected API routes with `Authorization: Bearer <token>`
 - Role-based admin access
+- Cloudflare Turnstile protection for password auth requests
 
 ### Task Management
 
@@ -178,6 +180,9 @@ FRONTEND_URL=https://wwwho.lol
 GOOGLE_CLIENT_ID=replace-with-google-client-id
 GOOGLE_CLIENT_SECRET=replace-with-google-client-secret
 
+TURNSTILE_ENABLED=true
+TURNSTILE_SECRET_KEY=replace-with-turnstile-secret-key
+
 TELEGRAM_BOT_USERNAME=your_bot_username
 TELEGRAM_BOT_TOKEN=your_bot_token
 TELEGRAM_WEBHOOK_SECRET=replace-with-random-webhook-secret
@@ -204,6 +209,29 @@ https://api.wwwho.lol/login/oauth2/code/google
 ```
 
 If the application is behind Cloudflare Tunnel or another reverse proxy and Google shows `redirect_uri_mismatch`, check the exact `redirect_uri` in Google error details. If the backend generates `http://api.wwwho.lol/login/oauth2/code/google`, either add that URI in Google Console as a temporary workaround or configure forwarded headers in the production proxy/backend setup.
+
+## Cloudflare Turnstile Setup
+
+Create a Turnstile widget in Cloudflare Dashboard for:
+
+```text
+wwwho.lol
+```
+
+Backend needs the secret key:
+
+```env
+TURNSTILE_ENABLED=true
+TURNSTILE_SECRET_KEY=replace-with-turnstile-secret-key
+```
+
+Frontend needs the public site key:
+
+```env
+VITE_TURNSTILE_SITE_KEY=replace-with-turnstile-site-key
+```
+
+The site key is public and can be used in the browser. The secret key must stay only on the backend/server.
 
 ## Local Development
 
