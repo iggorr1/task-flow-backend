@@ -16,6 +16,8 @@ public class RegisterRequestDto {
     @NotBlank
     private String password;
 
+    private String turnstileToken;
+
     public RegisterRequestDto() {
     }
 
@@ -35,6 +37,10 @@ public class RegisterRequestDto {
         return login;
     }
 
+    public String getTurnstileToken() {
+        return turnstileToken;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -49,5 +55,9 @@ public class RegisterRequestDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setTurnstileToken(String turnstileToken) {
+        this.turnstileToken = turnstileToken;
     }
 }
