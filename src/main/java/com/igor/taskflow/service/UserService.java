@@ -25,15 +25,23 @@ public class UserService {
     private final JwtService jwtService;
     private final UserRepository repo;
     private final PasswordEncoder passwordEncoder;
+    private final TurnstileVerificationService turnstileVerificationService;
 
-    public UserService(JwtService jwtService, UserRepository repo, PasswordEncoder passwordEncoder) {
+    public UserService(
+            JwtService jwtService,
+            UserRepository repo,
+            PasswordEncoder passwordEncoder,
+            TurnstileVerificationService turnstileVerificationService
+    ) {
         this.jwtService = jwtService;
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
+        this.turnstileVerificationService = turnstileVerificationService;
     }
 
     public LoginResponseDto login(LoginRequestDto dto) {
 
+        turnstileVerificationService.verify(dto.getTurnstileToken());
 
         User user = repo.findByLogin(dto.getLogin())
                 .orElseThrow(UserNotFoundException::new);
@@ -54,6 +62,8 @@ public class UserService {
     }
 
     public UserResponseDto register(RegisterRequestDto dto) {
+
+        turnstileVerificationService.verify(dto.getTurnstileToken());
 
         if (repo.existsByLogin(dto.getLogin())) {
             throw new LoginAlreadyExistsException();
